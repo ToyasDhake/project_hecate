@@ -49,9 +49,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <cmath>
 #include <cstdlib>
 #include <random>
-#include "../include/QLearning.hpp"
+#include "QLearning.hpp"
+#include <boost/range/irange.hpp>
+
 
 QLearning::QLearning() {
+    for (int i : boost::irange(0, 1296)) {
+        std::vector<double> row(3, 0.0);
+        qTable.push_back(row);
+    }
 }
 
 void QLearning::setEpsilon(double e) {
@@ -63,24 +69,116 @@ double QLearning::getEpsilon() {
 }
 
 void QLearning::setQtable(std::string path) {
+    ROS_INFO_STREAM(path);
+    std::ofstream out(path);
+    for (auto&& i : qTable) {
+        for (auto&& j : i)
+            out << j <<',';
+        out << '\n';
+    }
+    ROS_INFO("Qtable Stored");
 }
 
 void QLearning::getQtable(std::string path) {
+    std::vector<double> temp;
+    std::vector<std::vector<double>> temp2;
+    std::ifstream file(path);
+    std::string row, cell;
+    if (file.good()) {
+        ROS_INFO("File loaded");
+        int rowCount = 0;
+        while (std::getline(file, row)) {
+            int columnCount = 0;
+            std::stringstream linestream(row);
+            while (getline(linestream, cell, ',')) {
+                std::stringstream convertor(cell);
+                convertor >> qTable[rowCount][columnCount];
+                ++columnCount;
+            }
+            temp2.push_back(temp);
+            ++rowCount;
+        }
+    } else {
+       ROS_ERROR("file cannot be loaded");
+       std::cerr << "error";
+       exit(-1);
+    }
 }
 
 void QLearning::qLearn(int state, int action, int reward, double val) {
+    double currentValue =  qTable[state][action];
+    if (currentValue == 0) {
+        qTable[state][action] = reward;
+    } else {
+        qTable[state][action] = currentValue + alpha * (val - currentValue);
+    }
 }
 
 void QLearning::robotLearn(int si, int act, int rew, int nsi) {
+    std::vector<double> qNextState;
+    qNextState = qTable[nsi];
+    auto maxIterator = std::max_element(std::begin(qNextState), std::end(qNextState));
+    int maxIndex = std::distance(std::begin(qNextState), maxIterator);
+    auto largest = qNextState[maxIndex];
+    qNextState.clear();
+    qLearn(si, act, rew, rew + gamma*largest);
 }
 
 void QLearning::testStoreQ() {
+    qTable[0][0] = 1;
+    qTable[0][1] = 2;
+    qTable[0][2] = 3;
 }
 
 int QLearning::demo(int index) {
-    return 0;
+    std::vector <double> qState;
+    qState = qTable[index];
+    auto maxIterator = std::max_element(std::begin(qState), std::end(qState));
+    int maxIndex = std::distance(std::begin(qState), maxIterator);
+    return maxIndex;
 }
 
 int QLearning::chooseAction(int index) {
-    return 0;
+    std::vector <double> qState;
+    qState = qTable[index];
+    auto maxIterator = std::max_element(std::begin(qState), std::end(qState));
+    int maxIndex = std::distance(std::begin(qState), maxIterator);
+    auto largest = qState[maxIndex];
+    int selectedAction = 0;
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<> dis(0.0, 1.0);
+    float randNum = dis(gen);
+
+    if (randNum < epsilon) {
+        auto minIterator = std::min_element(std::begin(qState), std::end(qState));
+        int minIndex = std::distance(std::begin(qState), minIterator);
+        auto mag = qState[maxIndex];
+        if ((std::fabs(qState[minIndex])) > (std::fabs(qState[maxIndex]))) {
+            mag = qState[minIndex];
+        }
+        for (int i : boost::irange(0, 3)) {
+           qState[i] += randNum*mag - 0.5*mag;
+        }
+        maxIterator = std::max_element(std::begin(qState), std::end(qState));
+        maxIndex = std::distance(std::begin(qState), maxIterator);
+        largest = qState[maxIndex];
+    }
+
+    std::vector<int> largestQ;
+    for (int i : boost::irange(0,3)) {
+        if (largest == qState[i])
+            largestQ.emplace_back(i);
+    }
+
+    if (largestQ.size() > 1) {
+        std::uniform_int_distribution<> disact(0, largestQ.size()-1);
+        selectedAction = largestQ[disact(gen)];
+    } else {
+        selectedAction = largestQ[0];
+    }
+    largestQ.clear();
+    qState.clear();
+    return selectedAction;
 }

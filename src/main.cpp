@@ -39,8 +39,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * calls the navigation functions and the rl-training functions
 */
 #include <ros/ros.h>
+#include <fstream>
+#include <iostream>
+#include "Navigation.hpp"
+#include "TurtlebotStates.hpp"
+#include "QLearning.hpp"
 
 int main(int argc, char* argv[]) {
     ros::init(argc, argv, "qlearn");
+    Navigation navigation;
+    int choice = 0;
+    std::string qTablePath;
+    std::cout << "Welcome to Acme robotics' Hecate" << std::endl;
+    std::cout << "Enter a choice" << std::endl;
+    std::cout << "1. Train Robot" << std::endl;
+    std::cout << "2. Test Test" << std::endl;
+    std::cin >> choice;
+    if (choice == 1) {
+        std::cout << "Enter path to a folder to store the qtable:- ";
+        std::cin >> qTablePath;
+        navigation.trainRobot(qTablePath + "qTable.csv");
+    } else if (choice == 2) {
+        std::cout << "Enter path to a folder where qtable is stored:- ";
+        std::cin >> qTablePath;
+        navigation.testRobot(qTablePath + "qTable.csv");
+    }
     return 0;
 }

@@ -67,8 +67,11 @@ class Navigation {
     TurtlebotStates turtlebotStates;
     int reward;
     bool isCollision;
+    ros::NodeHandle nh;
+    geometry_msgs::Twist msg;
 
  public:
+    double x, y, z, roll, pitch, yaw, x_goal, y_goal;
     /**
     * @brief constructor Navigation class
     * @param none
@@ -146,6 +149,7 @@ class Navigation {
     * mapping the vector to the state in rl table
     */
     int getStateIndex(std::vector<int> state);
+    void dom(const nav_msgs::Odometry::ConstPtr& msg);
 };
 
 #endif // INCLUDE_NAVIGATION_HPP_

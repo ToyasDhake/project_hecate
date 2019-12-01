@@ -41,19 +41,42 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iostream>
 #include <cfloat>
 #include <cmath>
-#include "../include/TurtlebotStates.hpp"
+#include "TurtlebotStates.hpp"
+#include <boost/range/irange.hpp>
+
 
 TurtlebotStates::TurtlebotStates() {
+    collisionStatus = false;
 }
 
 TurtlebotStates::~TurtlebotStates() {
 }
 
 std::vector<int> TurtlebotStates::returnLaserState() {
+    return laserState;
 }
 
 bool TurtlebotStates::isCollision() {
+    return collisionStatus;
 }
 
 void TurtlebotStates::callDepth(const sensor_msgs::LaserScan::ConstPtr& msg) {
+    std::vector<int> tempLaserState;
+    float minRange = 0.6;
+    int mod = (msg->ranges.size()/4);
+    collisionStatus = false;
+    for (int i : boost::irange(0, int(msg->ranges.size()))) {
+        if (i%mod == 0) {
+            if (std::isnan(msg->ranges[i])) {
+                tempLaserState.push_back(6);
+            } else {
+                tempLaserState.push_back(round(msg->ranges[i]));
+            }
+        }
+        if (msg->ranges[i] < minRange) {
+            collisionStatus = true;
+        }
+    }
+    laserState = tempLaserState;
+    tempLaserState.clear();
 }
