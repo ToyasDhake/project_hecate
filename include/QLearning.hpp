@@ -100,7 +100,7 @@ class QLearning {
     * @return none
     * updates reinforcement learning model
     */
-    void qLearn(int state, int action, int reward, double val);
+    double qLearn(int state, int action, int reward, double val);
      /**
     * @brief function robotLearn
     * @param int si
@@ -110,7 +110,7 @@ class QLearning {
     * @return none
     * applies the boltzmann equation to apply RL
     */
-    void robotLearn(int si, int act, int rew, int nsi);
+    int robotLearn(int si, int act, int rew, int nsi);
     /**
     * @brief function testStoreQ
     * @param none

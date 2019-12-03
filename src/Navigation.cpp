@@ -42,13 +42,6 @@ void Navigation::dom(const nav_msgs::Odometry::ConstPtr &msg) {
     x = msg->pose.pose.position.x;
     y = msg->pose.pose.position.y;
     z = msg->pose.pose.position.z;
-    // double quatx= msg->pose.pose.orientation.x;
-    // double quaty= msg->pose.pose.orientation.y;
-    // double quatz= msg->pose.pose.orientation.z;
-    // double quatw= msg->pose.pose.orientation.w;
-
-    // tf::Quaternion q(quatx, quaty, quatz, quatw);
-    // tf::Matrix3x3 m(q);
     tf::Quaternion q(
         msg->pose.pose.orientation.x,
         msg->pose.pose.orientation.y,
@@ -196,7 +189,7 @@ void Navigation::environmentReset() {
     }
 }
 
-void Navigation::testRobot(std::string path, double ix, double iy,
+double Navigation::testRobot(std::string path, double ix, double iy,
                                                          double fx, double fy) {
     x_goal = ix;
     y_goal = iy;
@@ -209,9 +202,6 @@ void Navigation::testRobot(std::string path, double ix, double iy,
         double inc_x = x_goal - x;
         double inc_y = y_goal - y;
         double angle_to_goal = atan2(inc_y, inc_x);
-        // ROS_INFO_STREAM(yaw);
-        // ROS_ERROR_STREAM(angle_to_goal);
-        // ROS_INFO_STREAM( abs(angle_to_goal - yaw));
         if (sqrt((x_goal - x) * (x_goal - x) + (y_goal - y) * (y_goal - y))
                                                                         < 0.5) {
             twistMessage.linear.x = 0.0;
@@ -237,11 +227,13 @@ void Navigation::testRobot(std::string path, double ix, double iy,
                      turtlebotStates.flagCollision(), abs(angle_to_goal - yaw));
             demoAction(chosenAction);
             ros::spinOnce();
+            return(angle_to_goal);
         }
+        
     }
 }
 
-void Navigation::demoAction(int action) {
+double Navigation::demoAction(int action) {
     if (action == 0) {
         twistMessage.linear.x = 0.5;
         twistMessage.angular.z = 0.0;
@@ -255,10 +247,12 @@ void Navigation::demoAction(int action) {
         twistMessage.angular.z = -3;
         velocityPublisher.publish(twistMessage);
     }
+    double linearSpeed = twistMessage.linear.x;
     sensor_msgs::LaserScan pc;
     sensor_msgs::LaserScanConstPtr msg1 = ros::topic::waitForMessage
                            <sensor_msgs::LaserScan>("/scan", ros::Duration(10));
     if (msg1 == NULL) {
         ROS_ERROR("Waiting for laser scan data");
     }
+    return linearSpeed;
 }

@@ -18,11 +18,27 @@ target_link_libraries(hecate ${catkin_LIBRARIES})
 
 
 ## Testing
-#if(CATKIN_ENABLE_TESTING)
-#  find_package(rostest REQUIRED)
-
-#  add_rostest_gtest(
-#  tf_talker test/talker.launch test/talker.cpp)
-#  target_link_libraries(tf_talker ${catkin_LIBRARIES})
-#  add_dependencies(tf_talker talkWithParentWorld ${PROJECT_NAME}_generate_messages_cpp ${catkin_EXPORTED_TARGETS})
-#endif()
+if(CATKIN_ENABLE_TESTING)
+  find_package(rostest REQUIRED)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g -O0 --coverage")
+  add_rostest_gtest(
+  hecateTest
+  test/rltest.launch
+  test/main.cpp
+  test/NavigationTest.cpp
+  test/QlearningTest.cpp
+  test/TurtlebotstatesTest.cpp
+  src/Navigation.cpp
+  src/QLearning.cpp
+  src/TurtlebotStates.cpp
+  )
+  target_link_libraries(
+  hecateTest
+  ${catkin_LIBRARIES}
+  )
+  add_dependencies(
+  hecateTest
+  hecate
+  ${catkin_EXPORTED_TARGETS}
+  )
+endif()

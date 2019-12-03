@@ -90,7 +90,7 @@ class Navigation {
     * Runs the inferece code 
     * the bot uses the trained model to navigate
     */
-    void testRobot(std::string path, double ix, double iy,
+    double testRobot(std::string path, double ix, double iy,
                                                           double fx, double fy);
     /**
     * @brief function trainRobot
@@ -127,7 +127,7 @@ class Navigation {
     * @return none
     * publishes linear and angular velocities to the turtlebot
     */
-    void demoAction(int action);
+    double demoAction(int action);
     void dom(const nav_msgs::Odometry::ConstPtr &msg);
 };
 
