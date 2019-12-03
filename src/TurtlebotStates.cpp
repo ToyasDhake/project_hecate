@@ -1,23 +1,17 @@
 /**
 BSD 3-Clause License
-
 Copyright (c) 2019, Shivam Akhauri,Toyas Dhake
 All rights reserved.
-
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-
 1. Redistributions of source code must retain the above copyright notice, this
    list of conditions and the following disclaimer.
-
 2. Redistributions in binary form must reproduce the above copyright notice,
    this list of conditions and the following disclaimer in the documentation
    and/or other materials provided with the distribution.
-
 3. Neither the name of the copyright holder nor the names of its
    contributors may be used to endorse or promote products derived from
    this software without specific prior written permission.
-
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -37,46 +31,62 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * @copyright BSD 3-clause, 2019 Shivam Akhauri,Toyas Dhake
 * @brief Code to read the current states of the turtlebot 
 */
-
 #include <iostream>
 #include <cfloat>
 #include <cmath>
 #include "TurtlebotStates.hpp"
 #include <boost/range/irange.hpp>
 
-
 TurtlebotStates::TurtlebotStates() {
+    // set the collision flag as false by default
     collisionStatus = false;
 }
 
 TurtlebotStates::~TurtlebotStates() {
 }
 
-std::vector<int> TurtlebotStates::returnLaserState() {
-    return laserState;
-}
+void TurtlebotStates::findLaserDepth(const sensor_msgs::LaserScan::ConstPtr
+                                                                         &msg) {
+    double nearest = 999;
+    for (auto temp : msg->ranges) {
+        if (temp < nearest)
+            nearest = temp;
+    }
+    if (nearest == 999) {
+        if (previousNearest < 3) {
+            collisionStatus = true;
+        } else {
+            collisionStatus = false;
+        }
+    } else {
+        previousNearest = nearest;
+        if (nearest < 0.8) {
+            collisionStatus = true;
+        } else {
+            collisionStatus = false;
+        }
+    }
 
-bool TurtlebotStates::isCollision() {
-    return collisionStatus;
-}
-
-void TurtlebotStates::callDepth(const sensor_msgs::LaserScan::ConstPtr& msg) {
     std::vector<int> tempLaserState;
-    float minRange = 0.6;
-    int mod = (msg->ranges.size()/4);
-    collisionStatus = false;
-    for (int i : boost::irange(0, int(msg->ranges.size()))) {
-        if (i%mod == 0) {
+    int mod = (msg->ranges.size() / 4);
+    for (int i : boost::irange(0, static_cast<int>(msg->ranges.size()))) {
+        if (i % mod == 0) {
             if (std::isnan(msg->ranges[i])) {
                 tempLaserState.push_back(6);
             } else {
                 tempLaserState.push_back(round(msg->ranges[i]));
             }
         }
-        if (msg->ranges[i] < minRange) {
-            collisionStatus = true;
-        }
     }
     laserState = tempLaserState;
     tempLaserState.clear();
+}
+
+bool TurtlebotStates::flagCollision() {
+    // return obstacle status
+    return collisionStatus;
+}
+
+std::vector<int> TurtlebotStates::returnLaserState() {
+    return laserState;
 }

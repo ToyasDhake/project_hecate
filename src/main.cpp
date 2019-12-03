@@ -1,23 +1,17 @@
 /**
 BSD 3-Clause License
-
 Copyright (c) 2019, Shivam Akhauri,Toyas Dhake
 All rights reserved.
-
 Redistribution and use in source and binary forms, with or without
 modification, are permitted provided that the following conditions are met:
-
 1. Redistributions of source code must retain the above copyright notice, this
    list of conditions and the following disclaimer.
-
 2. Redistributions in binary form must reproduce the above copyright notice,
    this list of conditions and the following disclaimer in the documentation
    and/or other materials provided with the distribution.
-
 3. Neither the name of the copyright holder nor the names of its
    contributors may be used to endorse or promote products derived from
    this software without specific prior written permission.
-
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
 AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
 IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
@@ -39,30 +33,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * calls the navigation functions and the rl-training functions
 */
 #include <ros/ros.h>
-#include <fstream>
-#include <iostream>
+#include <string>
 #include "Navigation.hpp"
-#include "TurtlebotStates.hpp"
-#include "QLearning.hpp"
 
-int main(int argc, char* argv[]) {
-    ros::init(argc, argv, "qlearn");
+/**
+* @param argc int
+* @param argv char array
+* @return 0
+* @brief main function 
+*/
+
+int main(int argc, char *argv[]) {
+    // initializes roombaRobot package
+    ros::init(argc, argv, "hecate");
+    // Object initialisation
     Navigation navigation;
-    int choice = 0;
-    std::string qTablePath;
-    std::cout << "Welcome to Acme robotics' Hecate" << std::endl;
-    std::cout << "Enter a choice" << std::endl;
-    std::cout << "1. Train Robot" << std::endl;
-    std::cout << "2. Test Test" << std::endl;
-    std::cin >> choice;
-    if (choice == 1) {
-        std::cout << "Enter path to a folder to store the qtable:- ";
-        std::cin >> qTablePath;
-        navigation.trainRobot(qTablePath + "qTable.csv");
-    } else if (choice == 2) {
-        std::cout << "Enter path to a folder where qtable is stored:- ";
-        std::cin >> qTablePath;
-        navigation.testRobot(qTablePath + "qTable.csv");
-    }
+    // Start the turtlebot movement
+    if (strcmp(argv[1], "test") == 0)
+        navigation.testRobot(argv[2], std::stod(argv[3]), std::stod(argv[4]),
+                                        std::stod(argv[5]), std::stod(argv[6]));
+    else if (strcmp(argv[1], "train") == 0)
+        navigation.trainRobot(argv[2]);
     return 0;
 }
