@@ -40,6 +40,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
 
+/**
+* @brief class TestVelocityOdom
+* Class to facilitate testing the 
+* Navigation of the turtlebot
+*/
 class TestVelocityOdom {
  private:
      geometry_msgs::Pose pose;
@@ -50,6 +55,10 @@ class TestVelocityOdom {
      }
 };
 
+ /**
+ * @brief Test if the turtlebot 
+ * is aligining in the direction of the goal
+ */
 TEST(TESTNavigation, verifyOrientationofRobotTowardsGoal) {
   Navigation Nav;
   double ix = 2;
@@ -58,15 +67,21 @@ TEST(TESTNavigation, verifyOrientationofRobotTowardsGoal) {
   double fy = 4;
   ASSERT_NE(0, Nav.testRobot("model.csv", ix, iy, fx, fy));
 }
-
-
+ /**
+ * @brief Test to verify if turtlebot 
+ * is able to observe new states for the 
+ * RL algorithm to work
+ */
 TEST(TESTNavigation, checkForCorrectStateIndex) {
   Navigation Nav;
   std::vector<int> state = {2, 2, 2, 2};
   ASSERT_EQ(259, Nav.getStateIndex(state));
 }
 
-
+/**
+ * @brief Test if the turtlebot is
+ * subscribed to receive lineqar and angular velocities
+ */
 TEST(TESTNavigation, checkIfVelocityPublished) {
     ros::NodeHandle nh;
     TestVelocityOdom temp;
@@ -79,16 +94,21 @@ TEST(TESTNavigation, checkIfVelocityPublished) {
     EXPECT_EQ(1, sub.getNumPublishers());
 }
 
+/**
+ * @brief Test if the turtlebot is
+ * moves with the expected 
+ * linear velocity for the given action
+ */
 TEST(TESTNavigation, checkRobotMovementForChoosenAction) {
     Navigation Nav;
     int action = 0; 
     EXPECT_EQ(0.5, Nav.demoAction(action));
 }
 
-// TEST(TESTNavigation, checkNewTrainRewardObtainedForAction) {
-//    Navigation Nav;
-//    ASSERT_GT(0, Nav.trainRobot("model.csv"));
-//}
+/**
+ * @brief Test if the navigation class 
+ * object is initialized correctly
+ */
 TEST(TESTNavigation, testIntializationError) {
     EXPECT_NO_FATAL_FAILURE(Navigation nav);
 }

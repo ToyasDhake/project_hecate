@@ -37,6 +37,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "TurtlebotStates.hpp"
 
 
+
+/**
+ * @brief Test to verify if Obstacle detection is 
+ * happening properly
+ * Obtain laserscan sensor data and 
+ * raise a flag if obstacle detected
+ */
 TEST(TESTTurtlebotState, checkObstacleDetection) {
     TurtlebotStates depthData;
     ros::NodeHandle nh;
@@ -67,6 +74,10 @@ TEST(TESTTurtlebotState, checkObstacleDetection) {
     ASSERT_TRUE(collision);
 }
 
+/**
+ * @brief check if flag is raised when obstacle 
+ * distance is very less
+ */
 TEST(TESTTurtlebotState, checkDefaultflagCollisionValue) {
   TurtlebotStates d;
   ASSERT_FALSE(d.flagCollision());
