@@ -1,4 +1,5 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/ToyasDhake/project_hecate/blob/master/LICENSE.txt)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/ToyasDhake/project_hecate/blob/master/License) [![Build Status](https://travis-ci.org/ToyasDhake/project_hecate.svg?branch=master)](https://travis-ci.org/ToyasDhake/project_hecate) [![Coverage Status](https://coveralls.io/repos/github/ToyasDhake/project_hecate/badge.svg?branch=master)](https://coveralls.io/github/ToyasDhake/project_hecate?branch=master)
+
 
 # project_hecate
 
@@ -30,7 +31,7 @@ TBD
 TBD
 ```
 
-### Doxygen STeps
+### Doxygen Steps
 ```
 sudo apt install doxygen
 cd <project_heacte repo>
@@ -38,6 +39,8 @@ doxygen ./Doxygen
 ```
 
 ## Dependencies
+
+
 
 ## Known Issues and bugs
 
