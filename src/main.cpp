@@ -49,10 +49,33 @@ int main(int argc, char *argv[]) {
     // Object initialisation
     Navigation navigation;
     // Start the turtlebot movement
-    if (strcmp(argv[1], "test") == 0)
-        navigation.testRobot(argv[2], std::stod(argv[3]), std::stod(argv[4]),
-                                        std::stod(argv[5]), std::stod(argv[6]));
-    else if (strcmp(argv[1], "train") == 0)
-        navigation.trainRobot(argv[2]);
+    if (strcmp(argv[1], "test") == 0) {
+        navigation.x_goal = std::stod(argv[3]);
+        navigation.y_goal = std::stod(argv[4]);
+        std::vector<int> state;
+        ros::Rate loop_rate(10);
+        QLearning qLearning;
+        qLearning.getQtable(argv[2]);
+        
+        while (ros::ok()) {
+            navigation.testRobot(std::stod(argv[3]),
+                                        std::stod(argv[5]), std::stod(argv[6]), qLearning, state, loop_rate);
+        }
+    }
+    else if (strcmp(argv[1], "train") == 0) {
+        int highestReward = 0;
+        
+        int episodeCount = 0;
+        int totalEpisode = 2;
+        
+        int innerLoopLimit = 700;
+        int nextStateIndex;
+        
+        ros::Rate loop_rate(10);
+        while (ros::ok()) {
+            navigation.trainRobot(argv[2], highestReward, episodeCount, totalEpisode, nextStateIndex, loop_rate, innerLoopLimit);
+        }
+        
+    }
     return 0;
 }

@@ -94,17 +94,16 @@ void QLearning::getQtable(std::string path) {
     }
 }
 
-double QLearning::qLearn(int state, int action, int reward, double val) {
+void QLearning::qLearn(int state, int action, int reward, double val) {
     double currentValue = qTable[state][action];
     if (currentValue == 0) {
         qTable[state][action] = reward;
     } else {
         qTable[state][action] = currentValue + alpha * (val - currentValue);
     }
-    return currentValue;
 }
 
-int QLearning::robotLearn(int si, int act, int rew, int nsi) {
+void QLearning::robotLearn(int si, int act, int rew, int nsi) {
     std::vector<double> qNextState;
     qNextState = qTable[nsi];
     auto maxIterator = std::max_element(std::begin(qNextState),
@@ -113,7 +112,6 @@ int QLearning::robotLearn(int si, int act, int rew, int nsi) {
     auto largest = qNextState[maxIndex];
     qNextState.clear();
     qLearn(si, act, rew, rew + gamma * largest);
-    return maxIndex;
 }
 
 void QLearning::testStoreQ() {

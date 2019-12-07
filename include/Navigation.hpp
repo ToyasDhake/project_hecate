@@ -62,6 +62,7 @@ class Navigation {
     ros::Subscriber sub_odom;
     TurtlebotStates turtlebotStates;
     int reward;
+    bool stored = false;
 
  public:
     double x, y, z, roll, pitch, yaw, x_goal, y_goal;
@@ -90,8 +91,8 @@ class Navigation {
     * Runs the inferece code 
     * the bot uses the trained model to navigate
     */
-    double testRobot(std::string path, double ix, double iy,
-                                                          double fx, double fy);
+    void testRobot(  double ix,
+                                                          double fx, double fy, QLearning &qLearning, std::vector<int> state, ros::Rate loop_rate);
     /**
     * @brief function trainRobot
     * @param path std::string
@@ -99,7 +100,7 @@ class Navigation {
     * training of the agent by receiving states
     * perform actions in that states and receive rewards
     */
-    void trainRobot(std::string path);
+    void trainRobot(std::string path, int &highestReward, int &episodeCount, int totalEpisode, int &nextStateIndex, ros::Rate loop_rate, int innerLoopLimit);
     /**
     * @brief function demoAction
     * @param std::vector<int> state
@@ -127,7 +128,7 @@ class Navigation {
     * @return none
     * publishes linear and angular velocities to the turtlebot
     */
-    double demoAction(int action);
+    void demoAction(int action);
     void dom(const nav_msgs::Odometry::ConstPtr &msg);
 };
 

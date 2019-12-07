@@ -62,6 +62,8 @@ TEST(TESTTurtlebotState, checkObstacleDetection) {
     sensorData.intensities.resize(100);
     bool collision = false;
     int count = 0;
+    std::vector<int> laserData = depthData.returnLaserState();
+
     while (ros::ok()) {
         pubScan.publish(sensorData);
         if (depthData.flagCollision()) {
@@ -79,6 +81,10 @@ TEST(TESTTurtlebotState, checkObstacleDetection) {
  * distance is very less
  */
 TEST(TESTTurtlebotState, checkDefaultflagCollisionValue) {
-  TurtlebotStates d;
-  ASSERT_FALSE(d.flagCollision());
+  TurtlebotStates turtlebotStates;
+  ASSERT_FALSE(turtlebotStates.flagCollision());
 }
+
+
+
+

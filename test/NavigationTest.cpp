@@ -37,81 +37,44 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <geometry_msgs/Twist.h>
 #include <vector>
 #include "Navigation.hpp"
+#include "QLearning.hpp"
 
 
 
-/**
-* @brief class TestVelocityOdom
-* Class to facilitate testing the 
-* Navigation of the turtlebot
-*/
-class TestVelocityOdom {
- private:
-     geometry_msgs::Pose pose;
-     geometry_msgs::Twist odom;
- public:
-     void testVelocityPublish(const geometry_msgs::Twist::ConstPtr& msg) {
-             odom = *msg;
-     }
-};
 
- /**
- * @brief Test if the turtlebot 
- * is aligining in the direction of the goal
- */
-TEST(TESTNavigation, verifyOrientationofRobotTowardsGoal) {
-  Navigation Nav;
-  double ix = 2;
-  double iy = 2;
-  double fx = 5;
-  double fy = 4;
-  ASSERT_NE(0, Nav.testRobot("model.csv", ix, iy, fx, fy));
-}
- /**
- * @brief Test to verify if turtlebot 
- * is able to observe new states for the 
- * RL algorithm to work
- */
 TEST(TESTNavigation, checkForCorrectStateIndex) {
   Navigation Nav;
   std::vector<int> state = {2, 2, 2, 2};
   ASSERT_EQ(259, Nav.getStateIndex(state));
 }
 
-/**
- * @brief Test if the turtlebot is
- * subscribed to receive lineqar and angular velocities
- */
-TEST(TESTNavigation, checkIfVelocityPublished) {
-    ros::NodeHandle nh;
-    TestVelocityOdom temp;
-    Navigation Nav;
-    ros::Rate loop_rate(10);
-    ros::Subscriber sub = nh.subscribe("/mobile_base/commands/velocity", 1000,
-                                      &TestVelocityOdom::testVelocityPublish,
-                                      &temp);
-    loop_rate.sleep();
-    EXPECT_EQ(1, sub.getNumPublishers());
+TEST(TESTNavigation, checkForTestRobot) {
+  Navigation navigation;
+  navigation.x_goal = 1;
+  navigation.y_goal = 1;
+  std::vector<int> state;
+  QLearning qLearning;
+  qLearning.getQtable("Path");
+  ros::Rate loop_rate(10);
+  navigation.testRobot(1,2,2, qLearning, state, loop_rate);
+  navigation.x = 1;
+  navigation.y = 1;
+  navigation.testRobot(1,2,2, qLearning, state, loop_rate);
+  navigation.x = 2;
+  navigation.y = 2;
+  navigation.testRobot(1,2,2, qLearning, state, loop_rate);
+  EXPECT_NEAR(2, navigation.x, 0.7);
 }
 
-/**
- * @brief Test if the turtlebot is
- * moves with the expected 
- * linear velocity for the given action
- */
-TEST(TESTNavigation, checkRobotMovementForChoosenAction) {
-    Navigation Nav;
-    int action = 0; 
-    EXPECT_EQ(0.5, Nav.demoAction(action));
+TEST(TESTNavigation, checkForTrainRobot) {
+  Navigation navigation;
+  int highestReward = 0;
+  int episodeCount = 0;
+  int totalEpisode = 1;  
+  int nextStateIndex;
+  ros::Rate loop_rate(10);
+  navigation.trainRobot("path", highestReward, episodeCount, totalEpisode, nextStateIndex, loop_rate, 1);
+  navigation.trainRobot("path", highestReward, episodeCount, totalEpisode, nextStateIndex, loop_rate, 1);
+  navigation.trainRobot("path", highestReward, episodeCount, totalEpisode, nextStateIndex, loop_rate, 1);
+  EXPECT_FALSE(false);
 }
-
-/**
- * @brief Test if the navigation class 
- * object is initialized correctly
- */
-TEST(TESTNavigation, testIntializationError) {
-    EXPECT_NO_FATAL_FAILURE(Navigation nav);
-}
-
-
-

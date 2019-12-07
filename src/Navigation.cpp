@@ -42,12 +42,20 @@ void Navigation::dom(const nav_msgs::Odometry::ConstPtr &msg) {
     x = msg->pose.pose.position.x;
     y = msg->pose.pose.position.y;
     z = msg->pose.pose.position.z;
+    // double quatx= msg->pose.pose.orientation.x;
+    // double quaty= msg->pose.pose.orientation.y;
+    // double quatz= msg->pose.pose.orientation.z;
+    // double quatw= msg->pose.pose.orientation.w;
+
+    // tf::Quaternion q(quatx, quaty, quatz, quatw);
+    // tf::Matrix3x3 m(q);
     tf::Quaternion q(
         msg->pose.pose.orientation.x,
         msg->pose.pose.orientation.y,
         msg->pose.pose.orientation.z,
         msg->pose.pose.orientation.w);
     tf::Matrix3x3 m(q);
+    
     m.getRPY(roll, pitch, yaw);
 }
 
@@ -66,6 +74,8 @@ Navigation::Navigation() {
     twistMessage.angular.x = 0.0;
     twistMessage.angular.y = 0.0;
     twistMessage.angular.z = 0.0;
+    sub_odom = nh.subscribe("odom", 10, &Navigation::dom, this);
+    ROS_INFO_STREAM("here");
     // publish velocity values for turtlebot
     velocityPublisher.publish(twistMessage);
 }
@@ -83,57 +93,57 @@ Navigation::~Navigation() {
 
 
 
-void Navigation::trainRobot(std::string path) {
-    int highestReward = 0;
-    int stateIndex = 0;
-    int episodeCount = 0;
-    int totalEpisode = 100;
+void Navigation::trainRobot(std::string path, int &highestReward, int &episodeCount, int totalEpisode, int &nextStateIndex, ros::Rate loop_rate, int innerLoopLimit) {
     double epsilonDiscount = 0.99;
-    std::vector<int> state;
-    int nextStateIndex;
     int chosenAction;
-    ros::Rate loop_rate(10);
-    while (ros::ok()) {
-        if (episodeCount < totalEpisode) {
-            bool collision = false;
-            int cumulatedReward = 0;
-            environmentReset();
-            if (qLearning.getEpsilon() > 0.05) {
-                qLearning.setEpsilon(qLearning.getEpsilon() * epsilonDiscount);
-            }
-
-            state = turtlebotStates.returnLaserState();
-            stateIndex = getStateIndex(state);
-
-            int innerLoopCount = 0;
-
-            while (innerLoopCount < 700) {
-                chosenAction = qLearning.chooseAction(stateIndex);
-                action(chosenAction, collision, reward, nextStateIndex);
-                cumulatedReward += reward;
-
-                if (highestReward < cumulatedReward) {
-                    highestReward = cumulatedReward;
-                }
-                qLearning.robotLearn(stateIndex, chosenAction,
-                                                        reward, nextStateIndex);
-                if (collision) {
-                    environmentReset();
-                    break;
-                } else {
-                    stateIndex = nextStateIndex;
-                }
-                innerLoopCount++;
-                ros::spinOnce();
-            }
-            ROS_INFO_STREAM("Epsilon: " << qLearning.getEpsilon()
-                                        << " Episode Number: " << episodeCount
-                                        << " Cum. reward: " << cumulatedReward);
-            episodeCount++;
+    int stateIndex = 0;
+    std::vector<int> state;
+    if (episodeCount < totalEpisode) {
+        bool collision = false;
+        int cumulatedReward = 0;
+        environmentReset();
+        if (qLearning.getEpsilon() > 0.05) {
+            qLearning.setEpsilon(qLearning.getEpsilon() * epsilonDiscount);
         }
-        ros::spinOnce();
+
+        state = turtlebotStates.returnLaserState();
+        stateIndex = getStateIndex(state);
+
+        int innerLoopCount = 0;
+
+        while (innerLoopCount < innerLoopLimit) {
+            chosenAction = qLearning.chooseAction(stateIndex);
+            action(chosenAction, collision, reward, nextStateIndex);
+            cumulatedReward += reward;
+
+            if (highestReward < cumulatedReward) {
+                highestReward = cumulatedReward;
+            }
+            qLearning.robotLearn(stateIndex, chosenAction,
+                                                    reward, nextStateIndex);
+            if (collision) {
+                environmentReset();
+                break;  
+            } else {
+                stateIndex = nextStateIndex;
+            }
+            innerLoopCount++;
+            ros::spinOnce();
+        }
+        ROS_INFO_STREAM("Epsilon: " << qLearning.getEpsilon()
+                                    << " Episode Number: " << episodeCount
+                                    << " Cum. reward: " << cumulatedReward);
+        episodeCount++;
+    } else
+    {
+        if (!stored)
+        {
+            qLearning.setQtable(path);
+            stored = true;
+        }
     }
-    qLearning.setQtable(path);
+    
+    ros::spinOnce();
 }
 
 int Navigation::getStateIndex(std::vector<int> state) {
@@ -164,7 +174,7 @@ void Navigation::action(int action, bool &colStat,
     }
     sensor_msgs::LaserScan pc;
     sensor_msgs::LaserScanConstPtr msg1 = ros::topic::waitForMessage
-                           <sensor_msgs::LaserScan>("/scan", ros::Duration(10));
+                           <sensor_msgs::LaserScan>("/scan", ros::Duration(1));
     if (msg1 == NULL)
         ROS_ERROR("Waiting for laser scan data");
     tempState = turtlebotStates.returnLaserState();
@@ -189,51 +199,44 @@ void Navigation::environmentReset() {
     }
 }
 
-double Navigation::testRobot(std::string path, double ix, double iy,
-                                                         double fx, double fy) {
-    x_goal = ix;
-    y_goal = iy;
-    std::vector<int> state;
-    ros::Rate loop_rate(10);
-    QLearning qLearning;
-    qLearning.getQtable(path);
-    ros::Subscriber sub_odom = nh.subscribe("odom", 10, &Navigation::dom, this);
-    while (ros::ok()) {
-        double inc_x = x_goal - x;
-        double inc_y = y_goal - y;
-        double angle_to_goal = atan2(inc_y, inc_x);
-        if (sqrt((x_goal - x) * (x_goal - x) + (y_goal - y) * (y_goal - y))
-                                                                        < 0.5) {
-            twistMessage.linear.x = 0.0;
-            twistMessage.angular.z = 0.0;
-            if (x_goal == ix) {
-                ROS_INFO_STREAM("********************************************");
-                ROS_INFO_STREAM("Reached workstation A on the assembly floor");
-                ROS_INFO_STREAM("Put the PAYLOAD on the turtle bot.");
-                for (int i : boost::irange(0, 50))
-                    loop_rate.sleep();
-                ROS_INFO_STREAM("Ready DELIVER PAYLOAD to workstation B.");
-                ROS_INFO_STREAM("********************************************");
-            }
-            x_goal = fx;
-            y_goal = fy;
-        } else {
-            int stateIndex = 0;
-            int chosenAction;
-            qLearning.setEpsilon(-1);
-            state = turtlebotStates.returnLaserState();
-            stateIndex = getStateIndex(state);
-            chosenAction = qLearning.demo(stateIndex,
-                     turtlebotStates.flagCollision(), abs(angle_to_goal - yaw));
-            demoAction(chosenAction);
-            ros::spinOnce();
-            return(angle_to_goal);
+void Navigation::testRobot( double ix,
+                                                         double fx, double fy, QLearning &qLearning, std::vector<int> state, ros::Rate loop_rate) {
+    
+    double inc_x = x_goal - x;
+    double inc_y = y_goal - y;
+    double angle_to_goal = atan2(inc_y, inc_x);
+    // ROS_INFO_STREAM(yaw);
+    // ROS_ERROR_STREAM(angle_to_goal);
+    // ROS_INFO_STREAM( abs(angle_to_goal - yaw));
+    if (sqrt((x_goal - x) * (x_goal - x) + (y_goal - y) * (y_goal - y))
+                                                                    < 0.5) {
+        twistMessage.linear.x = 0.0;
+        twistMessage.angular.z = 0.0;
+        if (x_goal == ix) {
+            ROS_INFO_STREAM("********************************************");
+            ROS_INFO_STREAM("Reached workstation A on the assembly floor");
+            ROS_INFO_STREAM("Put the PAYLOAD on the turtle bot.");
+            for (int i : boost::irange(0, 50))
+                loop_rate.sleep();
+            ROS_INFO_STREAM("Ready DELIVER PAYLOAD to workstation B.");
+            ROS_INFO_STREAM("********************************************");
         }
-        
+        x_goal = fx;
+        y_goal = fy;
+    } else {
+        int stateIndex = 0;
+        int chosenAction;
+        qLearning.setEpsilon(-1);
+        state = turtlebotStates.returnLaserState();
+        stateIndex = getStateIndex(state);
+        chosenAction = qLearning.demo(stateIndex,
+                    turtlebotStates.flagCollision(), abs(angle_to_goal - yaw));
+        demoAction(chosenAction);
+        ros::spinOnce();
     }
 }
 
-double Navigation::demoAction(int action) {
+void Navigation::demoAction(int action) {
     if (action == 0) {
         twistMessage.linear.x = 0.5;
         twistMessage.angular.z = 0.0;
@@ -247,12 +250,10 @@ double Navigation::demoAction(int action) {
         twistMessage.angular.z = -3;
         velocityPublisher.publish(twistMessage);
     }
-    double linearSpeed = twistMessage.linear.x;
     sensor_msgs::LaserScan pc;
     sensor_msgs::LaserScanConstPtr msg1 = ros::topic::waitForMessage
                            <sensor_msgs::LaserScan>("/scan", ros::Duration(10));
     if (msg1 == NULL) {
         ROS_ERROR("Waiting for laser scan data");
     }
-    return linearSpeed;
 }
