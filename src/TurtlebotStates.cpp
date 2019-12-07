@@ -46,7 +46,7 @@ TurtlebotStates::~TurtlebotStates() {
 }
 
 void TurtlebotStates::findLaserDepth(const sensor_msgs::LaserScan::ConstPtr
-                                                                         &msg) {
+                                         &msg) {
     double nearest = 999;
     for (auto temp : msg->ranges) {
         if (temp < nearest)

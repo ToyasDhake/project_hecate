@@ -24,22 +24,20 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-
 /**
 * @file TurtlebotStates.hpp
 * @author Shivam Akhauri, Toyas Dhake
 * @date 27 November 2019
 * @copyright BSD 3-clause, 2019 Shivam Akhauri,Toyas Dhake 
 * @brief Header for reading the robot current states
-**/ 
-#ifndef _HOME_TOYAS_CATKIN_WS_SRC_PROJECT_HECATE_INCLUDE_TURTLEBOTSTATES_HPP_
-#define _HOME_TOYAS_CATKIN_WS_SRC_PROJECT_HECATE_INCLUDE_TURTLEBOTSTATES_HPP_
+**/
+#ifndef INCLUDE_TURTLEBOTSTATES_HPP_
+#define INCLUDE_TURTLEBOTSTATES_HPP_
 
 #include <vector>
 #include "ros/ros.h"
 #include "geometry_msgs/Twist.h"
 #include "sensor_msgs/LaserScan.h"
-
 
 /**
  * @brief Class depthCalculatio
@@ -50,45 +48,45 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 class TurtlebotStates {
  private:
-  // raise flag if very close to the obstacle
-  bool collisionStatus = false;
-  double previousNearest = 10;
-  std::vector<int> laserState;
+    // raise flag if very close to the obstacle
+    bool collisionStatus = false;
+    double previousNearest = 10;
+    std::vector<int> laserState;
 
  public:
-  /**
-  * @brief constructor TurtlebotStates
-  * @param none
-  * @return none
-  * initializes the collisionStatus flag
-  */
-  TurtlebotStates();
+    /**
+    * @brief constructor TurtlebotStates
+    * @param none
+    * @return none
+    * initializes the collisionStatus flag
+    */
+    TurtlebotStates();
 
-  /**
-  * @brief destructor TurtlebotStates
-  * @param none
-  * @return none
-  * destroy the TurtlebotStates
-  */
-  ~TurtlebotStates();
+    /**
+    * @brief destructor TurtlebotStates
+    * @param none
+    * @return none
+    * destroy the TurtlebotStates
+    */
+    ~TurtlebotStates();
 
-  /**
-  * @brief function findLaserDepth
-  * @param msg type sensor_msgs::LaserScan
-  * @return none 
-  * function to read LaserScan sensor messages and raise flag 
-  * if distance of the obstacle is less than threshold 
-  */
-  void findLaserDepth(const sensor_msgs::LaserScan::ConstPtr &msg);
+    /**
+    * @brief function findLaserDepth
+    * @param msg type sensor_msgs::LaserScan
+    * @return none 
+    * function to read LaserScan sensor messages and raise flag 
+    * if distance of the obstacle is less than threshold 
+    */
+    void findLaserDepth(const sensor_msgs::LaserScan::ConstPtr &msg);
 
-  /**
-  * @brief function flagCollision
-  * @param none
-  * @return 1 if very close to obstacle and 0 if not close
-  * Return the current value of collisionStatus
-  */
-  bool flagCollision();
-  std::vector<int> returnLaserState();
+    /**
+    * @brief function flagCollision
+    * @param none
+    * @return 1 if very close to obstacle and 0 if not close
+    * Return the current value of collisionStatus
+    */
+    bool flagCollision();
+    std::vector<int> returnLaserState();
 };
 
-#endif  // _HOME_TOYAS_CATKIN_WS_SRC_PROJECT_HECATE_INCLUDE_TURTLEBOTSTATES_HPP_
+#endif  // INCLUDE_TURTLEBOTSTATES_HPP_

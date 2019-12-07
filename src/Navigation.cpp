@@ -24,7 +24,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-
 /**
 * @file Navigation.cpp
 * @author Shivam Akhauri, Toyas Dhake
@@ -55,7 +54,7 @@ void Navigation::dom(const nav_msgs::Odometry::ConstPtr &msg) {
         msg->pose.pose.orientation.z,
         msg->pose.pose.orientation.w);
     tf::Matrix3x3 m(q);
-    
+
     m.getRPY(roll, pitch, yaw);
 }
 
@@ -63,8 +62,8 @@ Navigation::Navigation() {
     yaw = 0.0;
     velocityPublisher = nh.advertise<geometry_msgs::Twist>
                                           ("/mobile_base/commands/velocity", 1);
-    distanceList = nh.subscribe<sensor_msgs::LaserScan>
-              ("/scan", 50, &TurtlebotStates::findLaserDepth, &turtlebotStates);
+    distanceList = nh.subscribe<sensor_msgs::LaserScan>("/scan", 50,
+                            &TurtlebotStates::findLaserDepth, &turtlebotStates);
 
     // initialize the velocities
 
@@ -91,12 +90,13 @@ Navigation::~Navigation() {
     velocityPublisher.publish(twistMessage);
 }
 
-
-
-void Navigation::trainRobot(std::string path, int &highestReward, int &episodeCount, int totalEpisode, int &nextStateIndex, ros::Rate loop_rate, int innerLoopLimit) {
+void Navigation::trainRobot(std::string path, int &highestReward,
+                                int &episodeCount, int totalEpisode,
+                                int &nextStateIndex, ros::Rate loop_rate,
+                                int innerLoopLimit) {
     double epsilonDiscount = 0.99;
-    int chosenAction;
-    int stateIndex = 0;
+    
+    
     std::vector<int> state;
     if (episodeCount < totalEpisode) {
         bool collision = false;
@@ -105,13 +105,14 @@ void Navigation::trainRobot(std::string path, int &highestReward, int &episodeCo
         if (qLearning.getEpsilon() > 0.05) {
             qLearning.setEpsilon(qLearning.getEpsilon() * epsilonDiscount);
         }
-
+        int stateIndex = 0;
         state = turtlebotStates.returnLaserState();
         stateIndex = getStateIndex(state);
 
         int innerLoopCount = 0;
 
         while (innerLoopCount < innerLoopLimit) {
+            int chosenAction;
             chosenAction = qLearning.chooseAction(stateIndex);
             action(chosenAction, collision, reward, nextStateIndex);
             cumulatedReward += reward;
@@ -120,10 +121,10 @@ void Navigation::trainRobot(std::string path, int &highestReward, int &episodeCo
                 highestReward = cumulatedReward;
             }
             qLearning.robotLearn(stateIndex, chosenAction,
-                                                    reward, nextStateIndex);
+                                 reward, nextStateIndex);
             if (collision) {
                 environmentReset();
-                break;  
+                break;
             } else {
                 stateIndex = nextStateIndex;
             }
@@ -134,15 +135,13 @@ void Navigation::trainRobot(std::string path, int &highestReward, int &episodeCo
                                     << " Episode Number: " << episodeCount
                                     << " Cum. reward: " << cumulatedReward);
         episodeCount++;
-    } else
-    {
-        if (!stored)
-        {
+    } else {
+        if (!stored) {
             qLearning.setQtable(path);
             stored = true;
         }
     }
-    
+
     ros::spinOnce();
 }
 
@@ -153,11 +152,11 @@ int Navigation::getStateIndex(std::vector<int> state) {
         tempState[tempIndex++] += i - 1;
     }
     return (tempState[3] + tempState[2] * 6 + tempState[1] * 36 +
-                                                          (tempState[0]) * 216);
+            (tempState[0]) * 216);
 }
 
-void Navigation::action(int action, bool &colStat,
-                                                  int &reward, int &nextState) {
+void Navigation::action(int action, bool &colStat, int &reward,
+                                                               int &nextState) {
     std::vector<int> tempState;
     if (action == 0) {
         twistMessage.linear.x = 0.2;
@@ -174,7 +173,7 @@ void Navigation::action(int action, bool &colStat,
     }
     sensor_msgs::LaserScan pc;
     sensor_msgs::LaserScanConstPtr msg1 = ros::topic::waitForMessage
-                           <sensor_msgs::LaserScan>("/scan", ros::Duration(1));
+                            <sensor_msgs::LaserScan>("/scan", ros::Duration(1));
     if (msg1 == NULL)
         ROS_ERROR("Waiting for laser scan data");
     tempState = turtlebotStates.returnLaserState();
@@ -199,17 +198,16 @@ void Navigation::environmentReset() {
     }
 }
 
-void Navigation::testRobot( double ix,
-                                                         double fx, double fy, QLearning &qLearning, std::vector<int> state, ros::Rate loop_rate) {
-    
+void Navigation::testRobot(double ix, double fx, double fy,
+                            QLearning &qLearning, std::vector<int> state,
+                            ros::Rate loop_rate) {
     double inc_x = x_goal - x;
     double inc_y = y_goal - y;
     double angle_to_goal = atan2(inc_y, inc_x);
     // ROS_INFO_STREAM(yaw);
     // ROS_ERROR_STREAM(angle_to_goal);
     // ROS_INFO_STREAM( abs(angle_to_goal - yaw));
-    if (sqrt((x_goal - x) * (x_goal - x) + (y_goal - y) * (y_goal - y))
-                                                                    < 0.5) {
+    if (sqrt((x_goal - x) * (x_goal - x) + (y_goal - y) * (y_goal - y)) < 0.5) {
         twistMessage.linear.x = 0.0;
         twistMessage.angular.z = 0.0;
         if (x_goal == ix) {
@@ -230,7 +228,8 @@ void Navigation::testRobot( double ix,
         state = turtlebotStates.returnLaserState();
         stateIndex = getStateIndex(state);
         chosenAction = qLearning.demo(stateIndex,
-                    turtlebotStates.flagCollision(), abs(angle_to_goal - yaw));
+                                      turtlebotStates.flagCollision(),
+                                      abs(angle_to_goal - yaw));
         demoAction(chosenAction);
         ros::spinOnce();
     }
@@ -252,7 +251,8 @@ void Navigation::demoAction(int action) {
     }
     sensor_msgs::LaserScan pc;
     sensor_msgs::LaserScanConstPtr msg1 = ros::topic::waitForMessage
-                           <sensor_msgs::LaserScan>("/scan", ros::Duration(10));
+                                            <sensor_msgs::LaserScan>
+                                            ("/scan", ros::Duration(10));
     if (msg1 == NULL) {
         ROS_ERROR("Waiting for laser scan data");
     }

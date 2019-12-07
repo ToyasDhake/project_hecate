@@ -36,8 +36,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <sensor_msgs/LaserScan.h>
 #include "TurtlebotStates.hpp"
 
-
-
 /**
  * @brief Test to verify if Obstacle detection is 
  * happening properly
@@ -48,13 +46,13 @@ TEST(TESTTurtlebotState, checkObstacleDetection) {
     TurtlebotStates depthData;
     ros::NodeHandle nh;
     ros::Publisher pubScan = nh.advertise<sensor_msgs::LaserScan>("/scan", 50);
-    ros::Subscriber depthBuffer = nh.subscribe <sensor_msgs::LaserScan>
- ("/scan", 50, &TurtlebotStates::findLaserDepth, &depthData);
+    ros::Subscriber depthBuffer = nh.subscribe<sensor_msgs::LaserScan>
+                    ("/scan", 50, &TurtlebotStates::findLaserDepth, &depthData);
 
     sensor_msgs::LaserScan sensorData;
     sensorData.angle_min = -0.9;
     sensorData.angle_max = 0.9;
-    sensorData.angle_increment =  0.001;
+    sensorData.angle_increment = 0.001;
     sensorData.time_increment = 0.0;
     sensorData.range_min = 0.5;
     sensorData.range_max = 100.0;
@@ -62,7 +60,7 @@ TEST(TESTTurtlebotState, checkObstacleDetection) {
     sensorData.intensities.resize(100);
     bool collision = false;
     int count = 0;
-    std::vector<int> laserData = depthData.returnLaserState();
+    depthData.returnLaserState();
 
     while (ros::ok()) {
         pubScan.publish(sensorData);
@@ -81,10 +79,6 @@ TEST(TESTTurtlebotState, checkObstacleDetection) {
  * distance is very less
  */
 TEST(TESTTurtlebotState, checkDefaultflagCollisionValue) {
-  TurtlebotStates turtlebotStates;
-  ASSERT_FALSE(turtlebotStates.flagCollision());
+    TurtlebotStates turtlebotStates;
+    ASSERT_FALSE(turtlebotStates.flagCollision());
 }
-
-
-
-

@@ -24,7 +24,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-
 /**
 * @file QLearning.cpp
 * @author Shivam Akhauri, Toyas Dhake
@@ -126,7 +125,7 @@ int QLearning::demo(int index, bool collision, double angleToGoal) {
         std::vector<double> qState;
         qState = qTable[index];
         auto maxIterator = std::max_element(std::begin(qState),
-                                                              std::end(qState));
+                                            std::end(qState));
         maxIndex = std::distance(std::begin(qState), maxIterator);
 
         if (pauseGoal > 0)
@@ -172,7 +171,7 @@ int QLearning::chooseAction(int index) {
 
     if (randNum < epsilon) {
         auto minIterator = std::min_element(std::begin(qState),
-                                                              std::end(qState));
+                                            std::end(qState));
         int minIndex = std::distance(std::begin(qState), minIterator);
         auto mag = qState[maxIndex];
         if ((std::fabs(qState[minIndex])) > (std::fabs(qState[maxIndex]))) {

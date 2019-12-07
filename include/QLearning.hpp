@@ -24,7 +24,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-
 /**
 * @file QLearning.hpp
 * @author Shivam Akhauri, Toyas Dhake
@@ -32,8 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * @copyright BSD 3-clause, 2019 Shivam Akhauri,Toyas Dhake 
 * @brief Header for the RL algorithm implementation
 */
-#ifndef _HOME_TOYAS_CATKIN_WS_SRC_PROJECT_HECATE_INCLUDE_QLEARNING_HPP_
-#define _HOME_TOYAS_CATKIN_WS_SRC_PROJECT_HECATE_INCLUDE_QLEARNING_HPP_
+#ifndef INCLUDE_QLEARNING_HPP_
+#define INCLUDE_QLEARNING_HPP_
 
 #include <iostream>
 #include <algorithm>
@@ -45,7 +44,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * @brief Class Qlearning
  * class to perform reinforcement learning algorithm
  */
- 
+
 class QLearning {
  private:
     std::vector<std::vector<double>> qTable;
@@ -101,7 +100,7 @@ class QLearning {
     * updates reinforcement learning model
     */
     void qLearn(int state, int action, int reward, double val);
-     /**
+    /**
     * @brief function robotLearn
     * @param int si
     * @param int act 
@@ -125,7 +124,7 @@ class QLearning {
     * use the rl model to decide the best action
     */
     int demo(int index, bool collision, double angleToGoal);
-     /**
+    /**
     * @brief function chooseAction
     * @param  int index 
     * @return int action 
@@ -134,4 +133,4 @@ class QLearning {
     int chooseAction(int index);
 };
 
-#endif  // _HOME_TOYAS_CATKIN_WS_SRC_PROJECT_HECATE_INCLUDE_QLEARNING_HPP_
+#endif  // INCLUDE_QLEARNING_HPP_

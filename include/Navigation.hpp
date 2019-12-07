@@ -24,7 +24,6 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **/
 
-
 /**
 * @file Navigation.hpp
 * @author Shivam Akhauri, Toyas Dhake
@@ -32,8 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 * @copyright BSD 3-clause, 2019 Shivam Akhauri,Toyas Dhake
 * @brief Header for the robot autonomous of the robot
 */
-#ifndef _HOME_TOYAS_CATKIN_WS_SRC_PROJECT_HECATE_INCLUDE_NAVIGATION_HPP_
-#define _HOME_TOYAS_CATKIN_WS_SRC_PROJECT_HECATE_INCLUDE_NAVIGATION_HPP_
+#ifndef INCLUDE_NAVIGATION_HPP_
+#define INCLUDE_NAVIGATION_HPP_
 
 #include <ros/ros.h>
 #include <vector>
@@ -76,7 +75,7 @@ class Navigation {
     */
     Navigation();
 
-   /**
+    /**
     * @brief destructor Navigation class
     * @param none
     * @return none
@@ -91,8 +90,8 @@ class Navigation {
     * Runs the inferece code 
     * the bot uses the trained model to navigate
     */
-    void testRobot(  double ix,
-                                                          double fx, double fy, QLearning &qLearning, std::vector<int> state, ros::Rate loop_rate);
+    void testRobot(double ix, double fx, double fy, QLearning &qLearning,
+                    std::vector<int> state, ros::Rate loop_rate);
     /**
     * @brief function trainRobot
     * @param path std::string
@@ -100,7 +99,9 @@ class Navigation {
     * training of the agent by receiving states
     * perform actions in that states and receive rewards
     */
-    void trainRobot(std::string path, int &highestReward, int &episodeCount, int totalEpisode, int &nextStateIndex, ros::Rate loop_rate, int innerLoopLimit);
+    void trainRobot(std::string path, int &highestReward, int &episodeCount, 
+                        int totalEpisode, int &nextStateIndex, 
+                        ros::Rate loop_rate, int innerLoopLimit);
     /**
     * @brief function demoAction
     * @param std::vector<int> state
@@ -115,7 +116,7 @@ class Navigation {
     * publishes linear and angular velocities to the turtlebot
     */
     void action(int action, bool &colStatus, int &reward, int &nextState);
-     /**
+    /**
     * @brief function environmentPause
     * @param none
     * @return none
@@ -132,4 +133,4 @@ class Navigation {
     void dom(const nav_msgs::Odometry::ConstPtr &msg);
 };
 
-#endif  // _HOME_TOYAS_CATKIN_WS_SRC_PROJECT_HECATE_INCLUDE_NAVIGATION_HPP_
+#endif  // INCLUDE_NAVIGATION_HPP_

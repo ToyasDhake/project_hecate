@@ -46,6 +46,6 @@ TEST(TESTQlearning, testChooseAction) {
 TEST(TestQlearning1, testActionfromTheDemoFunctions) {
     QLearning q;
     q.testStoreQ();
-    int action = q.demo(0,1,0.5);
+    int action = q.demo(0, 1, 0.5);
     ASSERT_NE(0, action);
 }

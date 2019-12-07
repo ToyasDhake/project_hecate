@@ -56,26 +56,25 @@ int main(int argc, char *argv[]) {
         ros::Rate loop_rate(10);
         QLearning qLearning;
         qLearning.getQtable(argv[2]);
-        
+
         while (ros::ok()) {
-            navigation.testRobot(std::stod(argv[3]),
-                                        std::stod(argv[5]), std::stod(argv[6]), qLearning, state, loop_rate);
+            navigation.testRobot(std::stod(argv[3]), std::stod(argv[5]),
+                               std::stod(argv[6]), qLearning, state, loop_rate);
         }
-    }
-    else if (strcmp(argv[1], "train") == 0) {
+    } else if (strcmp(argv[1], "train") == 0) {
         int highestReward = 0;
-        
+
         int episodeCount = 0;
-        int totalEpisode = 2;
-        
+        int totalEpisode = 20;
+
         int innerLoopLimit = 700;
         int nextStateIndex;
-        
+
         ros::Rate loop_rate(10);
         while (ros::ok()) {
-            navigation.trainRobot(argv[2], highestReward, episodeCount, totalEpisode, nextStateIndex, loop_rate, innerLoopLimit);
+            navigation.trainRobot(argv[2], highestReward, episodeCount,
+                       totalEpisode, nextStateIndex, loop_rate, innerLoopLimit);
         }
-        
     }
     return 0;
 }

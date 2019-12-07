@@ -39,42 +39,42 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Navigation.hpp"
 #include "QLearning.hpp"
 
-
-
-
 TEST(TESTNavigation, checkForCorrectStateIndex) {
-  Navigation Nav;
-  std::vector<int> state = {2, 2, 2, 2};
-  ASSERT_EQ(259, Nav.getStateIndex(state));
+    Navigation Nav;
+    std::vector<int> state = {2, 2, 2, 2};
+    ASSERT_EQ(259, Nav.getStateIndex(state));
 }
 
 TEST(TESTNavigation, checkForTestRobot) {
-  Navigation navigation;
-  navigation.x_goal = 1;
-  navigation.y_goal = 1;
-  std::vector<int> state;
-  QLearning qLearning;
-  qLearning.getQtable("Path");
-  ros::Rate loop_rate(10);
-  navigation.testRobot(1,2,2, qLearning, state, loop_rate);
-  navigation.x = 1;
-  navigation.y = 1;
-  navigation.testRobot(1,2,2, qLearning, state, loop_rate);
-  navigation.x = 2;
-  navigation.y = 2;
-  navigation.testRobot(1,2,2, qLearning, state, loop_rate);
-  EXPECT_NEAR(2, navigation.x, 0.7);
+    Navigation navigation;
+    navigation.x_goal = 1;
+    navigation.y_goal = 1;
+    std::vector<int> state;
+    QLearning qLearning;
+    qLearning.getQtable("Path");
+    ros::Rate loop_rate(10);
+    navigation.testRobot(1, 2, 2, qLearning, state, loop_rate);
+    navigation.x = 1;
+    navigation.y = 1;
+    navigation.testRobot(1, 2, 2, qLearning, state, loop_rate);
+    navigation.x = 2;
+    navigation.y = 2;
+    navigation.testRobot(1, 2, 2, qLearning, state, loop_rate);
+    EXPECT_NEAR(2, navigation.x, 0.7);
 }
 
 TEST(TESTNavigation, checkForTrainRobot) {
-  Navigation navigation;
-  int highestReward = 0;
-  int episodeCount = 0;
-  int totalEpisode = 1;  
-  int nextStateIndex;
-  ros::Rate loop_rate(10);
-  navigation.trainRobot("path", highestReward, episodeCount, totalEpisode, nextStateIndex, loop_rate, 1);
-  navigation.trainRobot("path", highestReward, episodeCount, totalEpisode, nextStateIndex, loop_rate, 1);
-  navigation.trainRobot("path", highestReward, episodeCount, totalEpisode, nextStateIndex, loop_rate, 1);
-  EXPECT_FALSE(false);
+    Navigation navigation;
+    int highestReward = 0;
+    int episodeCount = 0;
+    int totalEpisode = 1;
+    int nextStateIndex;
+    ros::Rate loop_rate(10);
+    navigation.trainRobot("path", highestReward, episodeCount, totalEpisode,
+                                                  nextStateIndex, loop_rate, 1);
+    navigation.trainRobot("path", highestReward, episodeCount, totalEpisode,
+                                                  nextStateIndex, loop_rate, 1);
+    navigation.trainRobot("path", highestReward, episodeCount, totalEpisode,
+                                                  nextStateIndex, loop_rate, 1);
+    EXPECT_FALSE(false);
 }
