@@ -51,6 +51,7 @@ class TurtlebotStates {
     // raise flag if very close to the obstacle
     bool collisionStatus = false;
     double previousNearest = 10;
+    // state space for rl
     std::vector<int> laserState;
 
  public:
@@ -86,6 +87,13 @@ class TurtlebotStates {
     * Return the current value of collisionStatus
     */
     bool flagCollision();
+
+    /**
+    * @brief function returnLaserState()
+    * @param none
+    * @return std::vector<int>
+    * return the states for the rl algorithm using the laserscan
+    */
     std::vector<int> returnLaserState();
 };
 

@@ -99,8 +99,8 @@ class Navigation {
     * training of the agent by receiving states
     * perform actions in that states and receive rewards
     */
-    void trainRobot(std::string path, int &highestReward, int &episodeCount, 
-                        int totalEpisode, int &nextStateIndex, 
+    void trainRobot(std::string path, int &highestReward, int &episodeCount,
+                        int totalEpisode, int &nextStateIndex,
                         ros::Rate loop_rate, int innerLoopLimit);
     /**
     * @brief function demoAction
@@ -130,6 +130,12 @@ class Navigation {
     * publishes linear and angular velocities to the turtlebot
     */
     void demoAction(int action);
+    /**
+    * @brief function dom
+    * @param const nav_msgs::Odometry::ConstPtr
+    * @return none
+    * callback to read odometry
+    */
     void dom(const nav_msgs::Odometry::ConstPtr &msg);
 };
 
