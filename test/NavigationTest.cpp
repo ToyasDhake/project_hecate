@@ -40,12 +40,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "QLearning.hpp"
 
 TEST(TESTNavigation, checkForCorrectStateIndex) {
+    // Set a state and check if it is correct
     Navigation Nav;
     std::vector<int> state = {2, 2, 2, 2};
     ASSERT_EQ(259, Nav.getStateIndex(state));
 }
 
 TEST(TESTNavigation, checkForTestRobot) {
+    // Test robot test implementation by giving it some parameter.
     Navigation navigation;
     navigation.x_goal = 1;
     navigation.y_goal = 1;
@@ -60,10 +62,12 @@ TEST(TESTNavigation, checkForTestRobot) {
     navigation.x = 2;
     navigation.y = 2;
     navigation.testRobot(1, 2, 2, qLearning, state, loop_rate);
+    // See if robot ends up at desired locaion
     EXPECT_NEAR(2, navigation.x, 0.7);
 }
 
 TEST(TESTNavigation, checkForTrainRobot) {
+    // check if train data is working properly
     Navigation navigation;
     int highestReward = 0;
     int episodeCount = 0;

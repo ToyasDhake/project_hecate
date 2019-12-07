@@ -45,6 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "QLearning.hpp"
 
 QLearning::QLearning() {
+    // Create a table
     for (int i : boost::irange(0, 1296)) {
         std::vector<double> row(3, 0.0);
         qTable.push_back(row);
@@ -52,14 +53,17 @@ QLearning::QLearning() {
 }
 
 void QLearning::setEpsilon(double e) {
+    // Set epsilon
     epsilon = e;
 }
 
 double QLearning::getEpsilon() {
+    // return epsilon
     return epsilon;
 }
 
 void QLearning::setQtable(std::string path) {
+    // Store QTable genrated from training of robot
     ROS_INFO_STREAM(path);
     std::ofstream out(path);
     for (auto &&i : qTable) {
@@ -71,10 +75,12 @@ void QLearning::setQtable(std::string path) {
 }
 
 void QLearning::getQtable(std::string path) {
+    // Load stored data for robot testing
     std::vector<double> temp;
     std::vector<std::vector<double>> temp2;
     std::ifstream file(path);
     std::string row, cell;
+    // Read file
     if (file.good()) {
         ROS_INFO("File loaded");
         int rowCount = 0;
@@ -94,6 +100,7 @@ void QLearning::getQtable(std::string path) {
 }
 
 void QLearning::qLearn(int state, int action, int reward, double val) {
+    // Genrate enteries to be done to qtable based on current state and action
     double currentValue = qTable[state][action];
     if (currentValue == 0) {
         qTable[state][action] = reward;
@@ -103,6 +110,7 @@ void QLearning::qLearn(int state, int action, int reward, double val) {
 }
 
 void QLearning::robotLearn(int si, int act, int rew, int nsi) {
+    // RL model logic
     std::vector<double> qNextState;
     qNextState = qTable[nsi];
     auto maxIterator = std::max_element(std::begin(qNextState),
@@ -121,6 +129,7 @@ void QLearning::testStoreQ() {
 
 int QLearning::demo(int index, bool collision, double angleToGoal) {
     int maxIndex = 0;
+    // Check if file is loaded
     if (qTableGood) {
         std::vector<double> qState;
         qState = qTable[index];
@@ -136,6 +145,7 @@ int QLearning::demo(int index, bool collision, double angleToGoal) {
             }
         }
     } else {
+        // Fail safe if file does not load
         if (collision) {
             // stop linear motion and begin angular velocity of
             // turtlebot to avoid collision
@@ -157,6 +167,7 @@ int QLearning::demo(int index, bool collision, double angleToGoal) {
 }
 
 int QLearning::chooseAction(int index) {
+    // Select action for next step based on current genration data
     std::vector<double> qState;
     qState = qTable[index];
     auto maxIterator = std::max_element(std::begin(qState), std::end(qState));
@@ -165,6 +176,7 @@ int QLearning::chooseAction(int index) {
     int selectedAction = 0;
 
     std::random_device rd;
+    // Introduce some randomness in model
     std::mt19937 gen(rd());
     std::uniform_real_distribution<> dis(0.0, 1.0);
     float randNum = dis(gen);

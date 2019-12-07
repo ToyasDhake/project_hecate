@@ -47,6 +47,7 @@ TurtlebotStates::~TurtlebotStates() {
 
 void TurtlebotStates::findLaserDepth(const sensor_msgs::LaserScan::ConstPtr
                                          &msg) {
+    // Check if collision is going to occur based on laser scan data
     double nearest = 999;
     for (auto temp : msg->ranges) {
         if (temp < nearest)
@@ -66,7 +67,7 @@ void TurtlebotStates::findLaserDepth(const sensor_msgs::LaserScan::ConstPtr
             collisionStatus = false;
         }
     }
-
+    // Pack laser scan data
     std::vector<int> tempLaserState;
     int mod = (msg->ranges.size() / 4);
     for (int i : boost::irange(0, static_cast<int>(msg->ranges.size()))) {
@@ -88,5 +89,6 @@ bool TurtlebotStates::flagCollision() {
 }
 
 std::vector<int> TurtlebotStates::returnLaserState() {
+    // return Laser states
     return laserState;
 }

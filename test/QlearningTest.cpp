@@ -36,6 +36,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "QLearning.hpp"
 
 TEST(TESTQlearning, testChooseAction) {
+    // test choosen action return proper expected values
     QLearning q;
     q.testStoreQ();
     q.setEpsilon(0);
@@ -44,6 +45,7 @@ TEST(TESTQlearning, testChooseAction) {
 }
 
 TEST(TestQlearning1, testActionfromTheDemoFunctions) {
+    // check if demo is taking proper decision based on values in table
     QLearning q;
     q.testStoreQ();
     int action = q.demo(0, 1, 0.5);

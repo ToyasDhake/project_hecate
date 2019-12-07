@@ -44,33 +44,36 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
 int main(int argc, char *argv[]) {
-    // initializes roombaRobot package
+    // Initializes roombaRobot package
     ros::init(argc, argv, "hecate");
     // Object initialisation
     Navigation navigation;
     // Start the turtlebot movement
     if (strcmp(argv[1], "test") == 0) {
-        navigation.x_goal = std::stod(argv[3]);
-        navigation.y_goal = std::stod(argv[4]);
+        // Set parameters for testRobot
+        navigation.x_goal = std::stod(argv[3]);  // Initial x coordinate
+        navigation.y_goal = std::stod(argv[4]);  // Initial y coordinate
         std::vector<int> state;
-        ros::Rate loop_rate(10);
+        ros::Rate loop_rate(10);                // Set Loop rate
         QLearning qLearning;
         qLearning.getQtable(argv[2]);
-
+        // Run testRobot till ctrl+c is pressed
         while (ros::ok()) {
             navigation.testRobot(std::stod(argv[3]), std::stod(argv[5]),
                                std::stod(argv[6]), qLearning, state, loop_rate);
         }
     } else if (strcmp(argv[1], "train") == 0) {
+        // Set parameters for trainRobot
         int highestReward = 0;
 
         int episodeCount = 0;
         int totalEpisode = 20;
 
-        int innerLoopLimit = 700;
+        int innerLoopLimit = 700;   // Number of generation
         int nextStateIndex;
 
         ros::Rate loop_rate(10);
+        // Run trainRobot till ctrl+c is pressed
         while (ros::ok()) {
             navigation.trainRobot(argv[2], highestReward, episodeCount,
                        totalEpisode, nextStateIndex, loop_rate, innerLoopLimit);

@@ -75,11 +75,20 @@ Catkin
 1. The RL algorithm is under active research. The algorithm implemented navigates the robot autonomously and collision free from point A to Point B, but ocassionally the path taken is not highly optimized. 
 2. The training of the turtlebot is highly compute intensive.
 3. The Reinforcement learning algorithm was developed with hyperparametrs optimized for the gazebo world used in the simulation. New worlds may requires training the RL world with hyperparameter tuning and modifications.
+4. 
 
 
 ## Developer Documentation
+1. To train the model on a new gazebo world, tune the hyperparamers
 
 ## Results
+
+## Assumptions: 
+-We assume that the gazebo world is not changed drastically. Although the RL algorithm is capable of performing well in a dynamic world it was not trained on, drastic changes may require hyperparameter tuning of the algorithm.
+-We train the model on the gazebo simulator and assume that it performs well on real world too.
+-Acme Robotics has powerful systems with Ubuntu 16 and Ros kinetics with Gazebo (I7 processor, 16 GB RAM).
+-We assume that the obstacles are stationary.
+
 
 ## Product Backlog and Sprint Schedule
 

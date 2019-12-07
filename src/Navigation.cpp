@@ -38,23 +38,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Navigation.hpp"
 
 void Navigation::dom(const nav_msgs::Odometry::ConstPtr &msg) {
+    // Receive data from odometry
     x = msg->pose.pose.position.x;
     y = msg->pose.pose.position.y;
     z = msg->pose.pose.position.z;
-    // double quatx= msg->pose.pose.orientation.x;
-    // double quaty= msg->pose.pose.orientation.y;
-    // double quatz= msg->pose.pose.orientation.z;
-    // double quatw= msg->pose.pose.orientation.w;
-
-    // tf::Quaternion q(quatx, quaty, quatz, quatw);
-    // tf::Matrix3x3 m(q);
     tf::Quaternion q(
         msg->pose.pose.orientation.x,
         msg->pose.pose.orientation.y,
         msg->pose.pose.orientation.z,
         msg->pose.pose.orientation.w);
     tf::Matrix3x3 m(q);
-
     m.getRPY(roll, pitch, yaw);
 }
 
@@ -95,9 +88,8 @@ void Navigation::trainRobot(std::string path, int &highestReward,
                                 int &nextStateIndex, ros::Rate loop_rate,
                                 int innerLoopLimit) {
     double epsilonDiscount = 0.99;
-    
-    
     std::vector<int> state;
+    // Check number of genrations
     if (episodeCount < totalEpisode) {
         bool collision = false;
         int cumulatedReward = 0;
@@ -110,7 +102,7 @@ void Navigation::trainRobot(std::string path, int &highestReward,
         stateIndex = getStateIndex(state);
 
         int innerLoopCount = 0;
-
+        // Number of iterations per genration
         while (innerLoopCount < innerLoopLimit) {
             int chosenAction;
             chosenAction = qLearning.chooseAction(stateIndex);
@@ -122,6 +114,7 @@ void Navigation::trainRobot(std::string path, int &highestReward,
             }
             qLearning.robotLearn(stateIndex, chosenAction,
                                  reward, nextStateIndex);
+            // Quit generation if collision occurs
             if (collision) {
                 environmentReset();
                 break;
@@ -136,6 +129,7 @@ void Navigation::trainRobot(std::string path, int &highestReward,
                                     << " Cum. reward: " << cumulatedReward);
         episodeCount++;
     } else {
+        // Store qTable if training is complete
         if (!stored) {
             qLearning.setQtable(path);
             stored = true;
@@ -157,6 +151,7 @@ int Navigation::getStateIndex(std::vector<int> state) {
 
 void Navigation::action(int action, bool &colStat, int &reward,
                                                                int &nextState) {
+    // Set of action that can be taken while training
     std::vector<int> tempState;
     if (action == 0) {
         twistMessage.linear.x = 0.2;
@@ -171,6 +166,7 @@ void Navigation::action(int action, bool &colStat, int &reward,
         twistMessage.angular.z = -0.3;
         velocityPublisher.publish(twistMessage);
     }
+    // Wait for LaserScan data to act upon it
     sensor_msgs::LaserScan pc;
     sensor_msgs::LaserScanConstPtr msg1 = ros::topic::waitForMessage
                             <sensor_msgs::LaserScan>("/scan", ros::Duration(1));
@@ -193,6 +189,7 @@ void Navigation::action(int action, bool &colStat, int &reward,
 void Navigation::environmentReset() {
     std_srvs::Empty resetWorldService;
     ros::service::call("/gazebo/reset_world", resetWorldService);
+    // wait until the reseted environment is completely loaded
     while (turtlebotStates.flagCollision()) {
         ros::spinOnce();
     }
@@ -204,12 +201,11 @@ void Navigation::testRobot(double ix, double fx, double fy,
     double inc_x = x_goal - x;
     double inc_y = y_goal - y;
     double angle_to_goal = atan2(inc_y, inc_x);
-    // ROS_INFO_STREAM(yaw);
-    // ROS_ERROR_STREAM(angle_to_goal);
-    // ROS_INFO_STREAM( abs(angle_to_goal - yaw));
+    // Check of goal is reached
     if (sqrt((x_goal - x) * (x_goal - x) + (y_goal - y) * (y_goal - y)) < 0.5) {
         twistMessage.linear.x = 0.0;
         twistMessage.angular.z = 0.0;
+        // Check if the goal is first or second
         if (x_goal == ix) {
             ROS_INFO_STREAM("********************************************");
             ROS_INFO_STREAM("Reached workstation A on the assembly floor");
@@ -227,6 +223,7 @@ void Navigation::testRobot(double ix, double fx, double fy,
         qLearning.setEpsilon(-1);
         state = turtlebotStates.returnLaserState();
         stateIndex = getStateIndex(state);
+        // Get next action based on current state and RL Model
         chosenAction = qLearning.demo(stateIndex,
                                       turtlebotStates.flagCollision(),
                                       abs(angle_to_goal - yaw));
@@ -236,6 +233,7 @@ void Navigation::testRobot(double ix, double fx, double fy,
 }
 
 void Navigation::demoAction(int action) {
+    // Set of actions can be perfomed while testing robot
     if (action == 0) {
         twistMessage.linear.x = 0.5;
         twistMessage.angular.z = 0.0;
@@ -249,6 +247,7 @@ void Navigation::demoAction(int action) {
         twistMessage.angular.z = -3;
         velocityPublisher.publish(twistMessage);
     }
+    // Wait for LaserScan data for next iteration
     sensor_msgs::LaserScan pc;
     sensor_msgs::LaserScanConstPtr msg1 = ros::topic::waitForMessage
                                             <sensor_msgs::LaserScan>
