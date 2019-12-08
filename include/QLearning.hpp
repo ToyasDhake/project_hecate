@@ -120,6 +120,8 @@ class QLearning {
     /**
     * @brief function demo
     * @param int index 
+    * @param bool collision
+    * @param double angleToGoal
     * @return int action 
     * use the rl model to decide the best action
     */

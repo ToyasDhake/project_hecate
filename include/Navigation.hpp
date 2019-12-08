@@ -85,7 +85,12 @@ class Navigation {
 
     /**
     * @brief function testRobot
-    * @param path std::string
+    * @param double ix
+    * @param double fx
+    * @param double fy 
+    * @param QLearning &qLearning
+    * @param std::vector<int> state 
+    * @param ros::Rate loop_rate
     * @return none
     * Runs the inferece code 
     * the bot uses the trained model to navigate
@@ -94,7 +99,12 @@ class Navigation {
                     std::vector<int> state, ros::Rate loop_rate);
     /**
     * @brief function trainRobot
-    * @param path std::string
+    * @param std::string path
+    * @param int &highestReward
+    * @param int &episodeCount                       
+    * @param int totalEpisode, int &nextStateIndex
+    * @param ros::Rate loop_rate
+    * @param int innerLoopLimit
     * @return none
     * training of the agent by receiving states
     * perform actions in that states and receive rewards
@@ -103,24 +113,27 @@ class Navigation {
                         int totalEpisode, int &nextStateIndex,
                         ros::Rate loop_rate, int innerLoopLimit);
     /**
-    * @brief function demoAction
+    * @brief function getStateIndex
     * @param std::vector<int> state
     * @return int stateIndex
     * mapping the vector to the state in rl table
     */
     int getStateIndex(std::vector<int> state);
     /**
-    * @brief function demoAction
+    * @brief function action
     * @param int action
+    * @param bool &colStatus
+    * @param int &reward
+    * @param int &nextState
     * @return none
     * publishes linear and angular velocities to the turtlebot
     */
     void action(int action, bool &colStatus, int &reward, int &nextState);
     /**
-    * @brief function environmentPause
+    * @brief function environmentReset
     * @param none
     * @return none
-    * pauses the gazebo environment
+    * resets the gazebo environment
     */
     void environmentReset();
     /**
