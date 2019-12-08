@@ -8,12 +8,27 @@
 We propose a Self navigating package delivery robot, capable of finding route between logistic stations and deliver mobile parts like electric circuits, motherboards, screens and similar embedded parts from the manufacturing unit to the assembly line, in large factory units, like the Apple’s factory in China. Such autonomous robotic system with inherent artificial intelligence to find it’s way in factories and avoid collisions while traversing, has been developed to yield big returns to Acme robotics.
 
 ## Main features of the product
+
+![](RlEnvironment.png)
+
 - Capable of ‘learning to find it’s way’ in a factory/random environment
+
 - Obstacle avoidance
-- Stays at its default location (spawns at origin in the gazebo world) and when user commands to deliver a package, it moves to Point A to collect the package. It waits for the factory worker to put the package on it for 5 seconds and then moves towards the Point B, to deliver the package.
+
+- Spawns at its default location (origin in the gazebo world) and when user commands to deliver a package, it moves to Point A to collect the package. It waits for the factory worker to put the package on it for 5 seconds and then moves towards the Point B, to deliver the package.
+
 - Autonomous navigation
 
 ## System Design and Algorithm
+
+![](SystemDiagram.png)
+
+The architecture involves a turtlebot which has laserscan  and odometry to receive the "state" of its environment and actuator control system which allows the turtlebot to take three actions, including move straight , turn right and turn left. 
+
+![](Algorithm.png)
+
+The algorithm implemented is called reinforcement learning.
+RL is an aspect of Machine learning where an agent learns to behave in an environment, by performing certain actions and observing the rewards/results which it gets from those actions. It’s important to note that while RL at its core aims to maximize rewards/gains, implementing a greedy approach, doesn’t always lead to successful learning.
 
 
 ## Demo Steps
@@ -64,8 +79,29 @@ doxygen -g
 doxygen
 cd latex
 make
-
+## Create a pdf contain doxygen documentation. The same can be found in the repository under Documentation folder
 ```
+### Rosbag record and Play
+
+To record:
+```
+cd ~/catkin_ws/
+source devel/setup.bash
+roslaunch project_hecate testHecate.launch xInitial:=2 yInitial:=2 xFinal:=0 yFinal:=7 rosbagEnable:=true
+```
+To play:
+Download the rosbag from the following link:
+https://drive.google.com/open?id=1mX1fIqaXv8HXWAwkDrOgJz17dvpblmXe
+and place it in the results folder of this repository
+```
+Terminal 1:
+roscore
+
+Terminal2:
+cd ~/catkin_ws/src/project_hecate/results
+rosbag play hecate.bag
+```
+
 
 ## Dependencies
 ROS Kinetic
@@ -81,16 +117,22 @@ Catkin
 
 
 ## Results
-The following video shows the training of the turtlebot to "learn its way" through a floor map. During training, the turtlebot starts from the origin and then tries to navigate by taking actions of - going straight, take a left or take a right, in each episode. For each of these three actions, the turtlebot receives a reward. An episode involves a set of actions till the turtlebot collides. The episode ends after collision. The priciple during training is to achieve maximum sum of rewards in an episode. With more epochs of training, the turtlebot tries to maximize its rewards in the episode and stores the actions it took for the given states, which led to it earning maximum episode rewards.
+The following gif shows the training of the turtlebot to "learn its way" through a floor map. During training as shown below, the turtlebot starts from the origin and then tries to navigate by taking actions of - going straight, take a left or take a right, in each episode. For each of these three actions, the turtlebot receives a reward. An episode involves a set of actions till the turtlebot collides. The episode ends after collision. The priciple during training is to achieve maximum sum of rewards in an episode. With more epochs of training, the turtlebot tries to maximize its rewards in the episode and stores the actions it took for the given states, which led to it earning maximum episode rewards.
 
-During Inference, the turtlebot uses its learnt knowledge during training to decide on what actions to take, given a state, which had earlier led to it earn maximum rewards during training.
+![](Training.gif)
+
+
+During Inference, the turtlebot uses its learnt knowledge during training to decide on what actions to take, given a state, which had earlier fetched it maximum rewards during training. This is illustrated in the gif below, where the turtlebot is given Point A= (2,2) and Point B= (0,7). When the turtlebot starts from the origin to move towards (2,2), it attains maximum rewards for taking the action of turning slightly right towards (2,2) and then move straight towards it. Upon reaching point B, the turtlebot waits for the factory worker to place the weigth on the turtlebot. Again, when the turtlebot starts moving towards (0,7), for each small movement, the turtlebot looks inside the trained model to understand what action it should take based on what action earned it maximum reward when it was in similar state during training. Accordingly, the turtlebot finds it's way to the desired point B.
+
+![](Test.gif)
+
 
 
 ## Assumptions: 
--We assume that the gazebo world is not changed drastically. Although the RL algorithm is capable of performing well in a dynamic world it was not trained on, drastic changes may require hyperparameter tuning of the algorithm.
--We train the model on the gazebo simulator and assume that it performs well on real world too.
--Acme Robotics has powerful systems with Ubuntu 16 and Ros kinetics with Gazebo (I7 processor, 16 GB RAM).
--We assume that the obstacles are stationary.
+1. We assume that the gazebo world is not changed drastically. Although the RL algorithm is capable of performing well in a dynamic world it was not trained on, drastic changes may require hyperparameter tuning of the algorithm.
+2. We train the model on the gazebo simulator and assume that it performs well on real world too.
+3. Acme Robotics has powerful systems with Ubuntu 16 and Ros kinetics with Gazebo (I7 processor, 16 GB RAM).
+4. We assume that the obstacles are stationary.
 
 ## Documentation
 
@@ -102,7 +144,7 @@ The Sprint planning and review document can be accessed at:
 https://docs.google.com/document/d/1bXLFW7gJ9vdtRvNPkyLKW2za1OYg1eaJVJBhiPVOmLE/edit?usp=sharing
 
 The presentation is available at:
-https://umd0-my.sharepoint.com/:p:/r/personal/sakhauri_umd_edu/Documents/Presentation.pptx?d=wbe14eef608b648c7bbd99860123441db&csf=1&e=8Ihqd1
+https://docs.google.com/presentation/d/1U1F3XCiZAi0NFDbWznxIb-vIipTF5iEBj4lEAkPtH4Y/edit?usp=sharing
 
 ## Known Issues and Limitations
 1. The RL algorithm is under active research. The algorithm implemented navigates the robot autonomously and collision free from point A to Point B, but ocassionally the path taken is not highly optimized. 
