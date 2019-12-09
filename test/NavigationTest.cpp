@@ -72,15 +72,15 @@ TEST(TESTNavigation, checkForTestRobot) {
     qLearning.getQtable("Path");
     ros::Rate loop_rate(10);
     // Test robot test implementation by giving it some parameter.
-    navigation.testRobot(1, 2, 2, qLearning, state, loop_rate);
+    navigation.runRobot(1, 2, 2, qLearning, state, loop_rate);
     navigation.x = 1;
     navigation.y = 1;
     // Test robot test implementation by giving it some parameter.
-    navigation.testRobot(1, 2, 2, qLearning, state, loop_rate);
+    navigation.runRobot(1, 2, 2, qLearning, state, loop_rate);
     navigation.x = 2;
     navigation.y = 2;
     // Test robot test implementation by giving it some parameter.
-    navigation.testRobot(1, 2, 2, qLearning, state, loop_rate);
+    navigation.runRobot(1, 2, 2, qLearning, state, loop_rate);
     // See if robot ends up at desired location
     EXPECT_NEAR(2, navigation.x, 0.7);
 }
@@ -103,11 +103,11 @@ TEST(TESTNavigation, checkForTrainRobot) {
     int nextStateIndex;
     ros::Rate loop_rate(10);
     // Calling the training function
-    navigation.trainRobot("path", highestReward, episodeCount, totalEpisode,
+    navigation.runRobot("path", highestReward, episodeCount, totalEpisode,
                                                   nextStateIndex, loop_rate, 1);
-    navigation.trainRobot("path", highestReward, episodeCount, totalEpisode,
+    navigation.runRobot("path", highestReward, episodeCount, totalEpisode,
                                                   nextStateIndex, loop_rate, 1);
-    navigation.trainRobot("path", highestReward, episodeCount, totalEpisode,
+    navigation.runRobot("path", highestReward, episodeCount, totalEpisode,
                                                   nextStateIndex, loop_rate, 1);
     // check if pitch is not changed
     EXPECT_EQ(navigation.pitch, 0);

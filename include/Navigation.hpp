@@ -51,7 +51,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * velocities to the turtulebot based on the depth from 
  * the obstacle information received from the depthCalculator
 */
-class Navigation {
+class Navigation : public TurtlebotStates {
  private:
     QLearning qLearning;
     ros::NodeHandle nh;
@@ -84,7 +84,7 @@ class Navigation {
     ~Navigation();
 
     /**
-    * @brief function testRobot
+    * @brief function runRobot
     * @param double ix
     * @param double fx
     * @param double fy 
@@ -95,10 +95,10 @@ class Navigation {
     * Runs the inferece code 
     * the bot uses the trained model to navigate
     */
-    void testRobot(double ix, double fx, double fy, QLearning &qLearning,
+    void runRobot(double ix, double fx, double fy, QLearning &qLearning,
                     std::vector<int> state, ros::Rate loop_rate);
     /**
-    * @brief function trainRobot
+    * @brief function runRobot
     * @param std::string path
     * @param int &highestReward
     * @param int &episodeCount                       
@@ -109,7 +109,7 @@ class Navigation {
     * training of the agent by receiving states
     * perform actions in that states and receive rewards
     */
-    void trainRobot(std::string path, int &highestReward, int &episodeCount,
+    void runRobot(std::string path, int &highestReward, int &episodeCount,
                         int totalEpisode, int &nextStateIndex,
                         ros::Rate loop_rate, int innerLoopLimit);
     /**

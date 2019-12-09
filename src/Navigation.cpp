@@ -92,7 +92,7 @@ Navigation::~Navigation() {
     velocityPublisher.publish(twistMessage);
 }
 
-void Navigation::trainRobot(std::string path, int &highestReward,
+void Navigation::runRobot(std::string path, int &highestReward,
                                 int &episodeCount, int totalEpisode,
                                 int &nextStateIndex, ros::Rate loop_rate,
                                 int innerLoopLimit) {
@@ -231,7 +231,7 @@ void Navigation::environmentReset() {
     }
 }
 
-void Navigation::testRobot(double ix, double fx, double fy,
+void Navigation::runRobot(double ix, double fx, double fy,
                             QLearning &qLearning, std::vector<int> state,
                             ros::Rate loop_rate) {
     // To determine delta x

@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
         qLearning.getQtable(argv[2]);
         // Run testRobot till ctrl+c is pressed
         while (ros::ok()) {
-            navigation.testRobot(std::stod(argv[3]), std::stod(argv[5]),
+            navigation.runRobot(std::stod(argv[3]), std::stod(argv[5]),
                                std::stod(argv[6]), qLearning, state, loop_rate);
         }
     } else if (strcmp(argv[1], "train") == 0) {
@@ -75,7 +75,7 @@ int main(int argc, char *argv[]) {
         ros::Rate loop_rate(10);
         // Run trainRobot till ctrl+c is pressed
         while (ros::ok()) {
-            navigation.trainRobot(argv[2], highestReward, episodeCount,
+            navigation.runRobot(argv[2], highestReward, episodeCount,
                        totalEpisode, nextStateIndex, loop_rate, innerLoopLimit);
         }
     }

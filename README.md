@@ -1,5 +1,4 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/ToyasDhake/project_hecate/blob/master/License) [![Build Status](https://travis-ci.org/ToyasDhake/project_hecate.svg?branch=master)](https://travis-ci.org/ToyasDhake/project_hecate) [![Coverage Status](https://coveralls.io/repos/github/ToyasDhake/project_hecate/badge.svg?branch=master)](https://coveralls.io/github/ToyasDhake/project_hecate?branch=master)
-
+[![License: MIT](https://img.shields.io/badge/License-BSD%203--Clause-green.svg)](https://github.com/ToyasDhake/project_hecate/blob/master/License) [![Build Status](https://travis-ci.org/ToyasDhake/project_hecate.svg?branch=master)](https://travis-ci.org/ToyasDhake/project_hecate) [![Coverage Status](https://coveralls.io/repos/github/ToyasDhake/project_hecate/badge.svg?branch=master)](https://coveralls.io/github/ToyasDhake/project_hecate?branch=master)
 
 # project_hecate
 
@@ -38,7 +37,6 @@ RL is an aspect of Machine learning where an agent learns to behave in an enviro
 cd mkdir -p ~/catkin_ws/src
 cd ~/catkin_ws/
 catkin_make
-source devel/setup.bash
 cd src
 git clone https://github.com/ToyasDhake/project_hecate.git
 cd ..
@@ -54,6 +52,7 @@ The user has to specify two points in the gazebo world-
 For example, in the commands below, Point A coordinates is (2,2) and Point B coordinates is (0,7). With our experiments we found that this is one of the tough combinations for the RL to predict trajectory of the turtlebot, but our results are pretty good even on these points.
 
 ```
+source devel/setup.bash
 #To load Default RL trained model
 roslaunch project_hecate testHecate.launch xInitial:=2 yInitial:=2 xFinal:=0 yFinal:=7
 
@@ -80,7 +79,7 @@ doxygen -g
 doxygen
 cd latex
 make
-## Creates a pdf contain doxygen documentation. The same can be found in the repository under Documentation folder
+## Creates a pdf containing doxygen documentation. The same can be found in the repository under the Documentation folder.
 ```
 ### Rosbag record and Play
 
@@ -158,14 +157,11 @@ The week 2 was started with the review of the potential risks and the remaining 
 ## Documentation
 
 ### Product Backlog and Sprint Schedule
-The product backlog file can be accessed at:
-https://docs.google.com/spreadsheets/d/1CMIzxtqc-AxdCg9Mqs4tmX4eBPp3Yyy5vdFZ9n3fnpU/edit?usp=sharing
+The product backlog file can be accessed [here](https://docs.google.com/spreadsheets/d/1CMIzxtqc-AxdCg9Mqs4tmX4eBPp3Yyy5vdFZ9n3fnpU/edit?usp=sharing)
 
-The Sprint planning and review document can be accessed at:
-https://docs.google.com/document/d/1bXLFW7gJ9vdtRvNPkyLKW2za1OYg1eaJVJBhiPVOmLE/edit?usp=sharing
+The Sprint planning and review document can be accessed [here](https://docs.google.com/document/d/1bXLFW7gJ9vdtRvNPkyLKW2za1OYg1eaJVJBhiPVOmLE/edit?usp=sharing)
 
-The presentation is available at:
-https://docs.google.com/presentation/d/1U1F3XCiZAi0NFDbWznxIb-vIipTF5iEBj4lEAkPtH4Y/edit?usp=sharing
+The presentation is available [here](https://docs.google.com/presentation/d/1U1F3XCiZAi0NFDbWznxIb-vIipTF5iEBj4lEAkPtH4Y/edit?usp=sharing)
 
 
 
