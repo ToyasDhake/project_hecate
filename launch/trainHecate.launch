@@ -1,0 +1,13 @@
+<launch>
+
+    <include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch">
+        <arg name="world_file" value="$(find project_hecate)/worlds/trainHecate.world"/>
+    </include>
+    <node
+        pkg="project_hecate"
+        name="hecate"
+        type="hecate"
+        output="screen"
+        args = "train $(arg path)"
+    />
+</launch>

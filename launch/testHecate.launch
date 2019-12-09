@@ -1,0 +1,23 @@
+<launch>
+    <include file="$(find turtlebot_gazebo)/launch/turtlebot_world.launch">
+        
+        <arg name="world_file" value="$(find project_hecate)/worlds/testHecate.world"/>
+       
+    </include>
+    <arg name = "path" default= "locationRLModel" />
+    <arg name = "rosbagEnable" default= "false" />
+    <node
+        pkg="project_hecate"
+        name="hecate"
+        type="hecate"
+        output="screen"
+        args = "test $(arg path) $(arg xInitial) $(arg yInitial) $(arg xFinal) $(arg yFinal)"
+    />
+    <node
+        pkg="rosbag"
+        name="record"
+        type="record"
+        args="-a -x /camera/(.*) -O $(find project_hecate)/results/hecate.bag"
+        if="$(arg rosbagEnable)"
+    />
+</launch>

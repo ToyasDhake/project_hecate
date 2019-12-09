@@ -1,0 +1,4 @@
+<launch>
+    <node pkg="project_hecate" name="hecate" type="hecate" />
+    <test pkg="project_hecate" test-name="hecateTest" type="hecateTest" />
+</launch>

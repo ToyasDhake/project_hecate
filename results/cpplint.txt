@@ -1,0 +1,22 @@
+cpplint $( find . -name \*.hpp -or -name \*.cpp | grep -vE -e "^./build/" -e "^./vendor/" -e "^./docs/" -e "^./results" )
+Done processing ./src/main.cpp
+Done processing ./src/QLearning.cpp
+Done processing ./src/Navigation.cpp
+Done processing ./src/TurtlebotStates.cpp
+Done processing ./include/TurtlebotStates.hpp
+Done processing ./include/QLearning.hpp
+./include/Navigation.hpp:93:  Is this a non-const reference? If so, make const or use a pointer: QLearning &qLearning  [runtime/references] [2]
+./include/Navigation.hpp:102:  Is this a non-const reference? If so, make const or use a pointer: int &highestReward  [runtime/references] [2]
+./include/Navigation.hpp:102:  Is this a non-const reference? If so, make const or use a pointer: int &episodeCount  [runtime/references] [2]
+./include/Navigation.hpp:103:  Is this a non-const reference? If so, make const or use a pointer: int &nextStateIndex  [runtime/references] [2]
+./include/Navigation.hpp:118:  Is this a non-const reference? If so, make const or use a pointer: bool &colStatus  [runtime/references] [2]
+./include/Navigation.hpp:118:  Is this a non-const reference? If so, make const or use a pointer: int &reward  [runtime/references] [2]
+./include/Navigation.hpp:118:  Is this a non-const reference? If so, make const or use a pointer: int &nextState  [runtime/references] [2]
+Done processing ./include/Navigation.hpp
+Done processing ./test/main.cpp
+Done processing ./test/NavigationTest.cpp
+Done processing ./test/QlearningTest.cpp
+Done processing ./test/TurtlebotstatesTest.cpp
+Total errors found: 7
+
+
