@@ -55,15 +55,19 @@ void TurtlebotStates::findLaserDepth(const sensor_msgs::LaserScan::ConstPtr
     }
     if (nearest == 999) {
         if (previousNearest < 3) {
+            // Set the collision flag to be true if obstacle close
             collisionStatus = true;
         } else {
+            // Set the collsion flag to be false if obstacle far
             collisionStatus = false;
         }
     } else {
         previousNearest = nearest;
         if (nearest < 0.8) {
+            // If obstacle near, set the collsion status to true
             collisionStatus = true;
         } else {
+            // If obstacle far, set the collision status to be false
             collisionStatus = false;
         }
     }
@@ -72,6 +76,7 @@ void TurtlebotStates::findLaserDepth(const sensor_msgs::LaserScan::ConstPtr
     int mod = (msg->ranges.size() / 4);
     for (int i : boost::irange(0, static_cast<int>(msg->ranges.size()))) {
         if (i % mod == 0) {
+            // load the sensor data in the buffer
             if (std::isnan(msg->ranges[i])) {
                 tempLaserState.push_back(6);
             } else {

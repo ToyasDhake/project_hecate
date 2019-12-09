@@ -39,46 +39,76 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "Navigation.hpp"
 #include "QLearning.hpp"
 
+/**
+ * @brief      Tests to verify the correctness 
+ *             of the state indices
+ * @param      Navigation     gtest framework
+ * @param      checkForCorrectStateIndex     Name of the test
+ * @return     none
+ */
 TEST(TESTNavigation, checkForCorrectStateIndex) {
-    // Set a state and check if it is correct
+    // Constructor
     Navigation Nav;
+    // Set a state and check if it is correct
     std::vector<int> state = {2, 2, 2, 2};
     ASSERT_EQ(259, Nav.getStateIndex(state));
 }
-
+/**
+ * @brief      Tests to verify if the turtlebot
+ *             reaches the desired loaction
+ * @param      Navigation     gtest framework
+ * @param      checkForTestRobot     Name of the test
+ * @return     none
+ */
 TEST(TESTNavigation, checkForTestRobot) {
-    // Test robot test implementation by giving it some parameter.
+    // Constructor
     Navigation navigation;
+    // set the point B position for the robot to navigate
     navigation.x_goal = 1;
     navigation.y_goal = 1;
     std::vector<int> state;
     QLearning qLearning;
+    // Load the trained model
     qLearning.getQtable("Path");
     ros::Rate loop_rate(10);
+    // Test robot test implementation by giving it some parameter.
     navigation.testRobot(1, 2, 2, qLearning, state, loop_rate);
     navigation.x = 1;
     navigation.y = 1;
+    // Test robot test implementation by giving it some parameter.
     navigation.testRobot(1, 2, 2, qLearning, state, loop_rate);
     navigation.x = 2;
     navigation.y = 2;
+    // Test robot test implementation by giving it some parameter.
     navigation.testRobot(1, 2, 2, qLearning, state, loop_rate);
-    // See if robot ends up at desired locaion
+    // See if robot ends up at desired location
     EXPECT_NEAR(2, navigation.x, 0.7);
 }
 
+/**
+ * @brief      Tests to verify if the Rl algorithm is training as expected
+ * @param      Navigation     gtest framework
+ * @param      checkForTrainRobot     Name of the test
+ * @return     none
+ */
 TEST(TESTNavigation, checkForTrainRobot) {
-    // check if train data is working properly
+    // Constructor
     Navigation navigation;
+    // set the rewards
     int highestReward = 0;
     int episodeCount = 0;
+    // set total one episode for training
     int totalEpisode = 1;
+    // initialize the next state for the turtlebot
     int nextStateIndex;
     ros::Rate loop_rate(10);
+    // Calling the training function
     navigation.trainRobot("path", highestReward, episodeCount, totalEpisode,
                                                   nextStateIndex, loop_rate, 1);
     navigation.trainRobot("path", highestReward, episodeCount, totalEpisode,
                                                   nextStateIndex, loop_rate, 1);
     navigation.trainRobot("path", highestReward, episodeCount, totalEpisode,
                                                   nextStateIndex, loop_rate, 1);
-    EXPECT_FALSE(false);
+    // check if pitch is not changed
+    EXPECT_EQ(navigation.pitch, 0);
 }

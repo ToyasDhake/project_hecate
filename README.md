@@ -5,7 +5,7 @@
 
 ## Overview 
 
-We propose a Self navigating package delivery robot, capable of finding route between logistic stations and deliver mobile parts like electric circuits, motherboards, screens and similar embedded parts from the manufacturing unit to the assembly line, in large factory units, like the Apple’s factory in China. Such autonomous robotic system with inherent artificial intelligence to find it’s way in factories and avoid collisions while traversing, has been developed to yield big returns to Acme robotics.
+We propose a self-navigating package delivery robot, capable of finding route between logistic stations and deliver mobile parts like electric circuits, motherboards, screens and similar embedded parts from the manufacturing unit to the assembly line, in large factory units, like the Apple’s factory in China. Such autonomous robotic system with inherent artificial intelligence to find it’s way in factories and avoid collisions while traversing, has been developed to yield big returns to Acme robotics.
 
 ## Main features of the product
 
@@ -27,7 +27,7 @@ The architecture involves a turtlebot which has laserscan  and odometry to recei
 
 ![](Algorithm.png)
 
-The algorithm implemented is called reinforcement learning.
+The algorithm implemented is called reinforcement learning (RL).
 RL is an aspect of Machine learning where an agent learns to behave in an environment, by performing certain actions and observing the rewards/results which it gets from those actions. It’s important to note that while RL at its core aims to maximize rewards/gains, implementing a greedy approach, doesn’t always lead to successful learning.
 
 
@@ -58,17 +58,18 @@ For example, in the commands below, Point A coordinates is (2,2) and Point B coo
 roslaunch project_hecate testHecate.launch xInitial:=2 yInitial:=2 xFinal:=0 yFinal:=7
 
 # To train a custom model
-roslaunch project_hecate trainHecate.launch path:=<path to save>
+roslaunch project_hecate trainHecate.launch path:=<path_to_save>
+Note : <path_to_save> should be an absolute path. For example: 
+"/home/shivam/catkin_ws/src/project_hecate/model.csv"
 
 #To load custom RL model trained by the user
-roslaunch project_hecate testHecate.launch xInitial:=2 yInitial:=2 xFinal:=0 yFinal:=7 path:=<path to table>
+roslaunch project_hecate testHecate.launch xInitial:=2 yInitial:=2 xFinal:=0 yFinal:=7 path:=<path_to_table>
 ```
 
 ### Test Steps
 ```
 cd ~/catkin_ws/
 catkin_make run_tests
-rostest project_hecate rltest.launch
 ```
 
 ### Doxygen Steps
@@ -79,7 +80,7 @@ doxygen -g
 doxygen
 cd latex
 make
-## Create a pdf contain doxygen documentation. The same can be found in the repository under Documentation folder
+## Creates a pdf contain doxygen documentation. The same can be found in the repository under Documentation folder
 ```
 ### Rosbag record and Play
 
@@ -134,6 +135,26 @@ During Inference, the turtlebot uses its learnt knowledge during training to dec
 3. Acme Robotics has powerful systems with Ubuntu 16 and Ros kinetics with Gazebo (I7 processor, 16 GB RAM).
 4. We assume that the obstacles are stationary.
 
+## Known Issues and Limitations
+1. The RL algorithm is under active research. The algorithm implemented navigates the robot autonomously and collision free from point A to Point B, but ocassionally the path taken is not highly optimized. 
+2. The training of the turtlebot is highly compute intensive.
+3. The Reinforcement learning algorithm was developed with hyperparametrs optimized for the gazebo world used in the simulation. New worlds may requires training the RL world with hyperparameter tuning and modifications.
+4. The user has to define the Point A and Point B within the rectangular walls of the gazebo world. If not done so, the turtlebot would go towards the wall to reach the point, then avoid it and go back again and repeat in a loop.
+5 The Cpplint forbids the use of "non-const reference". But passing "const" to ROS function callbacks is not allowed.  
+
+
+## Developer Documentation
+1. To train the model on a new gazebo world, tune the hyperparamers like the epsilon value, rewards. The developer might have to experiment with the linear and angular velocities for the robot to move take actions slower for the Rl states for better training.
+2. Train the model with good number of epochs.
+3. Create the gazebo environment as a single model instead of agreegating seprate models and building the environment. This is because when we call reset Environment in the training pipeline, the orientation of objects resets to (0,0,0).
+
+## Agile Development Process details 
+![](AIP.png)
+
+We followed the Pair Programming development procedure which started with both the contributors doing an extensive literature survey. After agreement on the algorithm and the approach, we moved ahead with the first level iteration planning. The week one of the project involved development of stub functions, which was Toyas (driver) while Shivam (navigator) was involved in planning and sanity check as well as a prototype development for the complete product as a proof of concept. 
+The week 2 was started with the review of the potential risks and the remaining backlogs. We switched the roles, and the current driver implemented the Reinforcement learning algorithm, while the navigator did the review and to ensure quality of the product delivery. This development, implementation and testing was continued in the Iteration 3 of the project.
+
+
 ## Documentation
 
 ### Product Backlog and Sprint Schedule
@@ -146,18 +167,7 @@ https://docs.google.com/document/d/1bXLFW7gJ9vdtRvNPkyLKW2za1OYg1eaJVJBhiPVOmLE/
 The presentation is available at:
 https://docs.google.com/presentation/d/1U1F3XCiZAi0NFDbWznxIb-vIipTF5iEBj4lEAkPtH4Y/edit?usp=sharing
 
-## Known Issues and Limitations
-1. The RL algorithm is under active research. The algorithm implemented navigates the robot autonomously and collision free from point A to Point B, but ocassionally the path taken is not highly optimized. 
-2. The training of the turtlebot is highly compute intensive.
-3. The Reinforcement learning algorithm was developed with hyperparametrs optimized for the gazebo world used in the simulation. New worlds may requires training the RL world with hyperparameter tuning and modifications.
-4. The user has to define the Point A and Point B within the rectangular walls of the gazebo world. If not done so, the turtlebot would go towards the wall to reach the point, then avoid it and go back again and repeat in a loop.
-5 The Cpplint forbids the use of "non-const reference". But passing "const" to ROS function callbacks is not allowed.  
 
-
-## Developer Documentation
-1. To train the model on a new gazebo world, tune the hyperparamers like the epsilon value, rewards. The developer might have to experiment with the linear and angular velocities for the robot to move take actions slower for the Rl states for better training.
-2. Train the model with good number of epochs.
-3. Create the walls and other objects in gazebo in the form of gazebo models so that after each epoch of training, when we reset the environment, the objects do not align back to their original orientations. 
 
 ## License
 ```

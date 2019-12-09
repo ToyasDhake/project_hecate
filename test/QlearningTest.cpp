@@ -35,19 +35,37 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <ros/ros.h>
 #include "QLearning.hpp"
 
+/**
+ * @brief Test to verify expected turtlebot action
+ * @param      TESTQlearning    gtest framework
+ * @param      testChooseAction   Name of the test
+ * @return     none
+ */
 TEST(TESTQlearning, testChooseAction) {
-    // test choosen action return proper expected values
+    // Constructor
     QLearning q;
+    // Use the trained model to predict action
     q.testStoreQ();
+    // set epsilon
     q.setEpsilon(0);
     int epsi = q.getEpsilon();
+    // return expected action
     ASSERT_EQ(2, q.chooseAction(epsi));
 }
 
-TEST(TestQlearning1, testActionfromTheDemoFunctions) {
-    // check if demo is taking proper decision based on values in table
+/**
+ * @brief Test to verify if demo is taking proper decision 
+ *        based on values in table
+ * @param      TESTQlearning    gtest framework
+ * @param      testActionfromTheDemoFunctions   Name of the test
+ * @return     none
+ */
+TEST(TestQlearning, testActionfromTheDemoFunctions) {
+    // constructor
     QLearning q;
+    // load the trained RL model
     q.testStoreQ();
+    // test the demo function
     int action = q.demo(0, 1, 0.5);
     ASSERT_NE(0, action);
 }

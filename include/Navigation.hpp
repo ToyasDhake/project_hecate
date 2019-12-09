@@ -64,7 +64,7 @@ class Navigation {
     bool stored = false;
 
  public:
-    double x, y, z, roll, pitch, yaw, x_goal, y_goal;
+    double x, y, z, roll, pitch = 0, yaw, x_goal, y_goal;
     /**
     * @brief constructor Navigation class
     * @param none

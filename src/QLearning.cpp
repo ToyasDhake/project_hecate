@@ -48,6 +48,7 @@ QLearning::QLearning() {
     // Create a table
     for (int i : boost::irange(0, 1296)) {
         std::vector<double> row(3, 0.0);
+        // Store the states
         qTable.push_back(row);
     }
 }
@@ -80,16 +81,19 @@ void QLearning::getQtable(std::string path) {
     std::vector<std::vector<double>> temp2;
     std::ifstream file(path);
     std::string row, cell;
-    // Read file
+    // Read the model
     if (file.good()) {
         ROS_INFO("File loaded");
         int rowCount = 0;
         while (std::getline(file, row)) {
             int columnCount = 0;
             std::stringstream linestream(row);
+            // Read the model
             while (getline(linestream, cell, ',')) {
+                // Read cell wise
                 std::stringstream convertor(cell);
                 convertor >> qTable[rowCount][columnCount];
+                // Read the next cell
                 ++columnCount;
             }
             temp2.push_back(temp);
@@ -116,8 +120,11 @@ void QLearning::robotLearn(int si, int act, int rew, int nsi) {
     auto maxIterator = std::max_element(std::begin(qNextState),
                                                           std::end(qNextState));
     int maxIndex = std::distance(std::begin(qNextState), maxIterator);
+    // Take the action with the maximum boltzamnn value
     auto largest = qNextState[maxIndex];
+    // Clear states
     qNextState.clear();
+    // Apply the boltzmann equation
     qLearn(si, act, rew, rew + gamma * largest);
 }
 
@@ -133,10 +140,10 @@ int QLearning::demo(int index, bool collision, double angleToGoal) {
     if (qTableGood) {
         std::vector<double> qState;
         qState = qTable[index];
+        // Obtain maximum value as per the boltzmann equation
         auto maxIterator = std::max_element(std::begin(qState),
                                             std::end(qState));
         maxIndex = std::distance(std::begin(qState), maxIterator);
-
         if (pauseGoal > 0)
             pauseGoal--;
         if (pauseGoal == 0) {
@@ -170,14 +177,17 @@ int QLearning::chooseAction(int index) {
     // Select action for next step based on current genration data
     std::vector<double> qState;
     qState = qTable[index];
+    // Choose the maximum state value
     auto maxIterator = std::max_element(std::begin(qState), std::end(qState));
     int maxIndex = std::distance(std::begin(qState), maxIterator);
+    // Choose the state index with maximum state index
     auto largest = qState[maxIndex];
     int selectedAction = 0;
 
     std::random_device rd;
     // Introduce some randomness in model
     std::mt19937 gen(rd());
+    // Obtain the gaussian distribution for the epsilon value
     std::uniform_real_distribution<> dis(0.0, 1.0);
     float randNum = dis(gen);
 
@@ -185,6 +195,7 @@ int QLearning::chooseAction(int index) {
         auto minIterator = std::min_element(std::begin(qState),
                                             std::end(qState));
         int minIndex = std::distance(std::begin(qState), minIterator);
+        // Obtain the qstate value
         auto mag = qState[maxIndex];
         if ((std::fabs(qState[minIndex])) > (std::fabs(qState[maxIndex]))) {
             mag = qState[minIndex];
@@ -194,11 +205,13 @@ int QLearning::chooseAction(int index) {
         }
         maxIterator = std::max_element(std::begin(qState), std::end(qState));
         maxIndex = std::distance(std::begin(qState), maxIterator);
+        // Return the state index with the largest value
         largest = qState[maxIndex];
     }
 
     std::vector<int> largestQ;
     for (int i : boost::irange(0, 3)) {
+        // Return the state index with the largest value
         if (largest == qState[i])
             largestQ.emplace_back(i);
     }
@@ -209,6 +222,7 @@ int QLearning::chooseAction(int index) {
     } else {
         selectedAction = largestQ[0];
     }
+    // Reset the states
     largestQ.clear();
     qState.clear();
     return selectedAction;
